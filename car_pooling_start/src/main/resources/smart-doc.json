@@ -1,0 +1,24 @@
+{
+  "outPath": "D:\\carpooling",
+  "pathPrefix": "carpooling",
+  "allInOne": true,
+  "isStrict": false,
+  "coverOld": true,
+  "allInOne": true,
+  "randomMock": true,
+  "createDebugPage": false,
+  "style": "xt256",
+  "showAuthor": true,
+  "inlineEnum": true,
+  "projectName": "schoolmatch",
+  "ignoreRequestParams": [
+    "com.carpooling.common.pojo.BaseEntity"
+  ],
+  "groups": [
+    {
+      "name": "广告与信息模块",
+      "apis": "com.carpooling.start.controller.*"
+    }
+  ]
+}
+
