@@ -25,6 +25,30 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.carpooling</groupId>
+            <artifactId>car_pooling_stucertification</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.carpooling</groupId>
+            <artifactId>car_pooling_phonecertification</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.carpooling</groupId>
+            <artifactId>car_pooling_order</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.carpooling</groupId>
+            <artifactId>car_pooling_monitor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
     </dependencies>
 

@@ -99,6 +99,36 @@
 - car_pooling
   - car_pooling_common
   - car_pooling_start
+  - car_pooling_monitor
+  - car_pooling_order
+  - car_pooling_phonecertification
+  - car_pooling_stucertification
+
+# 模块的职责和注意事项
+
+## common
+
+提供基础功能和配置文件
+
+## monitor
+
+使用canal对数据库指定的表进行监听。
+
+## order
+
+订单模块
+
+## phonecertification
+
+电话认证模块
+
+## stucertification
+
+学生认证模块
+
+## start
+
+启动模块。实现一些其他认证。
 
 # 注意事项
 

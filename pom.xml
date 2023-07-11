@@ -12,6 +12,10 @@
     <modules>
         <module>car_pooling_common</module>
         <module>car_pooling_start</module>
+        <module>car_pooling_stucertification</module>
+        <module>car_pooling_phonecertification</module>
+        <module>car_pooling_order</module>
+        <module>car_pooling_monitor</module>
     </modules>
 
 
