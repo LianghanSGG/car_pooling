@@ -3,6 +3,7 @@ server:
   servlet:
     context-path: /carpooling
 
+
 mybatis-plus:
   mapper-locations: classpath*:mapper/*Mapper.xml
   configuration:
@@ -40,3 +41,10 @@ spring:
     # 正式上线修改密码
     password: F71BBE7314684A96
 
+canal:
+  hostname: "192.168.159.134"
+  port: 11111
+  destination: example
+  batchSize: 1000
+  #  这里有问题
+  subscribe-table: study\\.World
