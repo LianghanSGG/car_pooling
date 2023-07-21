@@ -2,6 +2,8 @@ package com.carpooling.common.annotation;
 
 
 import com.carpooling.common.pojo.R;
+import com.carpooling.common.pojo.vo.UserVO;
+import com.carpooling.common.util.UserContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -61,9 +63,11 @@ public class LogAspect {
         result = point.proceed();
 
 
+        UserVO userVO = UserContext.get();
+
         // todo:格式后期要处理一些
-        log.info("Userid:{}，Module:{}，Operation:{}，Result:{}，Request_type:{}，Class:{}，Method:{}，Parameter:{}, Reponse:{}"
-                , "未设置", userAction.module(), userAction.operation(), "成功", request.getMethod()
+        log.info("UserIP:{}，Userid:{}，Module:{}，Operation:{}，Result:{}，Request_type:{}，Class:{}，Method:{}，Parameter:{}, Reponse:{}"
+                , userVO != null ? userVO.getClientIP() : "未知IP", userVO != null ? userVO.getId() : "未知ID", userAction.module(), userAction.operation(), "成功", request.getMethod()
                 , point.getTarget().getClass().getName(), signature.getName(), m1.writeValueAsString(getParameter(method, point.getArgs())), m1.writeValueAsString(result));
         return result;
     }
@@ -81,9 +85,10 @@ public class LogAspect {
 
         Log userAction = method.getAnnotation(Log.class);
 
+        UserVO userVO = UserContext.get();
 
-        log.info("Userid:{}，Module:{}，Operation:{}，Result:失败->{}，Request_type:{}，Class:{}，Method:{}，Parameter:{}"
-                , "未设置", userAction.module(), userAction.operation(), e.getMessage(), request.getMethod()
+        log.info("UserIP:{}，Userid:{}，Module:{}，Operation:{}，Result:失败->{}，Request_type:{}，Class:{}，Method:{}，Parameter:{}"
+                , userVO != null ? userVO.getClientIP() : "未知IP", userVO != null ? userVO.getId() : "未知ID", userAction.module(), userAction.operation(), e.getMessage(), request.getMethod()
                 , point.getTarget().getClass().getName(), signature.getName(), m1.writeValueAsString(getParameter(method, point.getArgs())));
         return R.error(e.getMessage());
     }

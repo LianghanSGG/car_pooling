@@ -36,10 +36,21 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://8.134.152.127:3306/school_match?useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8&serverTimezone=GMT%2B8
+    url: jdbc:mysql://8.134.152.127:3306/pooling_car?useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8&serverTimezone=GMT%2B8
     username: root
     # 正式上线修改密码
     password: F71BBE7314684A96
+
+
+# 根据具体设备进行更换
+ordinary:
+  async:
+    corePoolSize: 16
+    maxPoolSize: 20
+    queueCapacity: 100
+    keepAliveSeconds: 10
+    prefix: "ordExecutor-"
+
 
 canal:
   hostname: "192.168.159.134"
@@ -48,3 +59,8 @@ canal:
   batchSize: 1000
   #  这里有问题
   subscribe-table: study\\.World
+
+wx:
+  config:
+    appid: 123
+    secret: 123

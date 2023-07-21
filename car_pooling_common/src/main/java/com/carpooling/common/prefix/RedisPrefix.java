@@ -7,4 +7,6 @@ package com.carpooling.common.prefix;
  * @date 2023-06-30 18:19
  */
 public class RedisPrefix {
+
+    public static final String USER = "user:";
 }

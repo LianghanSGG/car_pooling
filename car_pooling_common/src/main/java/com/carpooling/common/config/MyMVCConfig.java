@@ -1,10 +1,16 @@
 package com.carpooling.common.config;
 
 
+import com.carpooling.common.interceptor.LoginInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.annotation.Resource;
 
 
 /**
@@ -15,6 +21,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class MyMVCConfig implements WebMvcConfigurer {
 
+    @Resource
+    LoginInterceptor loginInterceptor;
+
+    // 默认登录，电话号验证
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loginInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/user/login");
+
+    }
+
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -24,7 +43,6 @@ public class MyMVCConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .maxAge(3600 * 24);
     }
-
 
 
 }

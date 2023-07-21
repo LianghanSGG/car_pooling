@@ -30,6 +30,21 @@ public class R<T> {
         return result;
     }
 
+    public static <T> R<T> success(T object, Integer code) {
+        R<T> result = new R<T>();
+        result.data = object;
+        result.code = code;
+        result.msg = "成功";
+        return result;
+    }
+
+    public static <T> R<T> success() {
+        R<T> result = new R<T>();
+        result.code = 200;
+        result.msg = "成功";
+        return result;
+    }
+
     public static <T> R<T> error(String msg) {
         R result = new R();
         result.msg = msg;
@@ -48,6 +63,13 @@ public class R<T> {
         R result = new R();
         result.msg = msg;
         result.code = 300;
+        return result;
+    }
+
+    public static <T> R<T> data_error(String msg) {
+        R result = new R();
+        result.msg = msg;
+        result.code = 401;
         return result;
     }
 }

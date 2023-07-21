@@ -10,14 +10,21 @@
   "style": "xt256",
   "showAuthor": true,
   "inlineEnum": true,
-  "projectName": "schoolmatch",
+  "projectName": "carpooling",
   "ignoreRequestParams": [
     "com.carpooling.common.pojo.BaseEntity"
   ],
   "groups": [
     {
-      "name": "广告与信息模块",
-      "apis": "com.carpooling.start.controller.*"
+      "name": "监听模块",
+      "apis": "com.carpooling.monitor.controller.*"
+    },
+    {
+      "name": "订单模块",
+      "apis": "com.carpooling.order.controller.*"
+    },    {
+      "name": "电话验证模块",
+      "apis": "com.carpooling.monitor.controller.*"
     }
   ]
 }
