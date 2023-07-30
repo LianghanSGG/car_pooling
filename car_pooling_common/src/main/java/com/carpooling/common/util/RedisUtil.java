@@ -22,6 +22,16 @@ public class RedisUtil {
     RedisTemplate redisTemplate;
 
     /**
+     * 检查value是否存在
+     *
+     * @param key
+     * @return
+     */
+    public boolean ValueExist(String key) {
+        return redisTemplate.hasKey(key);
+    }
+
+    /**
      * @param key     Redis Key
      * @param value   传入的值
      * @param timeout 时间参数
@@ -43,17 +53,54 @@ public class RedisUtil {
     }
 
     /**
+     * String类型的增长
+     *
+     * @param key Redis Key
+     * @param nu  要增长的值
+     */
+    public void StringIncrement(String key, long nu) {
+        redisTemplate.opsForValue().increment(key, nu);
+    }
+
+    /**
+     * 检查是否存在于Set
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    public boolean SetExistMember(String key, Object value) {
+        return redisTemplate.opsForSet().isMember(key, value);
+    }
+
+    /**
+     * 将元素添加进Set
+     *
+     * @param key     Redis Key
+     * @param timeout 时长
+     * @param unit    单位
+     * @param value   值，可多个
+     */
+    public void SetAdd(String key, long timeout, TimeUnit unit, Object... value) {
+        redisTemplate.opsForSet().add(key, value);
+        redisTemplate.expire(key, timeout, unit);
+    }
+
+
+    /**
      * 使用异步进行删除，不会抛出异常
      *
      * @param key
      */
     @Async("ordinaryThreadPool")
     public void AsyncDeleted(String key) {
+
         try {
             redisTemplate.delete(key);
         } catch (Exception e) {
             log.info("Redis删除出现错误:方法:[{}];参数:[{}];异常信息:[{}]", "AsyncDeleted", key, e.getMessage());
         }
     }
+
 
 }

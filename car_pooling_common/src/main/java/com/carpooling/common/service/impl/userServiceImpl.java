@@ -1,18 +1,17 @@
 package com.carpooling.common.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.carpooling.common.exception.DException;
+import com.carpooling.common.mapper.UserMapper;
 import com.carpooling.common.pojo.WxLoginEntity;
 import com.carpooling.common.pojo.db.User;
-
-import com.carpooling.common.mapper.UserMapper;
 import com.carpooling.common.pojo.vo.LoginVo;
+import com.carpooling.common.pojo.vo.UserInfoVo;
 import com.carpooling.common.pojo.vo.UserVO;
 import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.properties.NumberConstants;
@@ -25,9 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -68,7 +64,7 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new RuntimeException(e.getMessage());
         }
 
-        if (Objects.isNull(wxLoginEntity)){
+        if (Objects.isNull(wxLoginEntity)) {
             throw new RuntimeException("wxLoginEntity IS NULL");
         }
 
@@ -98,7 +94,6 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
             boolean p = StrUtil.isEmptyIfStr(user.getPhone());
             boolean a = StrUtil.isEmptyIfStr(user.getAccount());
-
             if (!p & !a) {
                 //正常用户
                 loginVo.setState(0);
@@ -126,7 +121,6 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 } else {
                     loginVo.setState(2);
                 }
-
                 String token = JwtUtil.getToken("temp", user.getId(), NumberConstants.TOKEN_TIME_15_DAY);
                 loginVo.setToken(token);
 
@@ -136,6 +130,50 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return loginVo;
 
 
+    }
+
+    /**
+     * 获得个人信息
+     *
+     * @param userId 用户id
+     * @return
+     */
+    @Override
+    public UserInfoVo getInfo(Long userId) {
+        User user = getOne(Wrappers.lambdaQuery(User.class).eq(User::getId, userId));
+        if (Objects.isNull(user)) return null;
+
+        UserInfoVo userInfoVo = new UserInfoVo();
+        BeanUtil.copyProperties(user, userInfoVo, "id", "openid", "sessionKey", "deleted", "createTime", "updateTime");
+        return userInfoVo;
+    }
+
+    /**
+     * 更新个人资料
+     *
+     * @param userId
+     * @param userInfoVo
+     * @return
+     */
+    @Override
+    public boolean updateInfo(Long userId, UserInfoVo userInfoVo) {
+        User user = new User();
+        user.setId(userId);
+        BeanUtil.copyProperties(userInfoVo, user);
+        if (updateById(user)) {
+            redisUtil.StringAdd(RedisPrefix.USERINFO_TIME + userId, "1", 15, TimeUnit.DAYS);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean addInfo(Long userId, UserInfoVo userInfoVo) {
+        User user = new User();
+        user.setId(userId);
+        BeanUtil.copyProperties(userInfoVo, user);
+        return updateById(user);
     }
 
 

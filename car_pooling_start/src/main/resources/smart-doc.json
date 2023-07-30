@@ -1,6 +1,6 @@
 {
   "outPath": "D:\\carpooling",
-  "pathPrefix": "carpooling",
+  "serverUrl": "http://43.138.156.106",
   "allInOne": true,
   "isStrict": false,
   "coverOld": true,
@@ -16,15 +16,36 @@
   ],
   "groups": [
     {
-      "name": "监听模块",
-      "apis": "com.carpooling.monitor.controller.*"
+      "name": "订单模块",
+      "apis": "com.carpooling.order.controller.OrderController"
     },
     {
-      "name": "订单模块",
-      "apis": "com.carpooling.order.controller.*"
-    },    {
-      "name": "电话验证模块",
-      "apis": "com.carpooling.monitor.controller.*"
+      "name": "投诉模块",
+      "apis": "com.carpooling.start.controller.ComplainController"
+    },
+    {
+      "name": "反馈模块",
+      "apis": "com.carpooling.start.controller.FeedbackController"
+    },
+    {
+      "name": "问题与教程模块",
+      "apis": "com.carpooling.start.controller.QAController"
+    },
+    {
+      "name": "用户模块模块",
+      "apis": "com.carpooling.start.controller.userController"
+    },
+    {
+      "name": "测试模块",
+      "apis": "com.carpooling.start.controller.testController"
+    },
+    {
+      "name": "学号认证模块",
+      "apis": "com.carpooling.stu.controller.StuController"
+    },
+    {
+      "name": "特殊模块",
+      "apis": "com.carpooling.common.controller.commonController"
     }
   ]
 }

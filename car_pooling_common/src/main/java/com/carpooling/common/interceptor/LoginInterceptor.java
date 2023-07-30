@@ -4,7 +4,6 @@ package com.carpooling.common.interceptor;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.interfaces.Claim;
-import com.carpooling.common.pojo.R;
 import com.carpooling.common.pojo.db.User;
 import com.carpooling.common.pojo.vo.UserVO;
 import com.carpooling.common.prefix.RedisPrefix;
@@ -14,7 +13,6 @@ import com.carpooling.common.util.HttpUtil;
 import com.carpooling.common.util.JwtUtil;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.UserContext;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -93,12 +91,10 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 
                 Long userId = claims.get("temp").asLong();
 
-
                 if (Objects.isNull(userId)) {
                     hp.response(response, false, 400, "token格式有误", null);
                     return false;
                 }
-
 
                 User dbUser = userServiceImpl.checkUserState(userId);
 
@@ -141,8 +137,10 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
                     } else {
                         userVO.setState(2);
                     }
-
+                    userVO.setId(userId);
+                    userVO.setOpenid(dbUser.getOpenid());
                     userVO.setClientIP(hp.getClientIP(request));
+
                     UserContext.set(userVO);
 
                     return true;
@@ -159,6 +157,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
                     // 正常状态
                     userVO.setState(0);
                     userVO.setClientIP(hp.getClientIP(request));
+
                     UserContext.set(userVO);
                     return true;
                 }

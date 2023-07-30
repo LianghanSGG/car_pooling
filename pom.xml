@@ -29,7 +29,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
 
-
+        <druid.version>1.2.15</druid.version>
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <hutool-all.version>5.8.11</hutool-all.version>
         <java-jwt.version>3.8.3</java-jwt.version>
@@ -37,6 +37,13 @@
 
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+
         <!--配置文件注入-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -69,12 +76,6 @@
             <version>4.2.1</version>
         </dependency>
 
-
-        <!--权限认证 暂时不引入-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-security</artifactId>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

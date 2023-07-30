@@ -1,32 +1,22 @@
 package com.carpooling.start.controller;
 
 
-import cn.hutool.core.util.RandomUtil;
-import com.carpooling.common.annotation.Log;
 import com.carpooling.common.pojo.R;
 import com.carpooling.common.pojo.TestEntity;
-
-
-import com.carpooling.common.pojo.db.User;
+import com.carpooling.common.pojo.vo.StuCertVO;
 import com.carpooling.common.pojo.vo.UserVO;
 import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.UserService;
-import com.carpooling.common.util.JwtUtil;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.UserContext;
 import com.carpooling.start.service.ThService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 项目启动连接测试类
@@ -34,6 +24,7 @@ import java.util.Set;
  * @author LiangHanSggg
  * @date 2023-06-30 20:16
  */
+@Validated
 @RestController
 @Slf4j
 public class testController {
@@ -50,7 +41,12 @@ public class testController {
     @Autowired
     UserService userService;
 
-    @Log(module = "测试模块")
+    /**
+     * 连接测试1
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("/testLinking")
     public R<TestEntity> test(@RequestParam("id") String id) {
 
@@ -63,6 +59,11 @@ public class testController {
         return R.success(testEntity);
     }
 
+    /**
+     * 连接测试2
+     *
+     * @return
+     */
     @GetMapping("/test")
     public R<TestEntity> test2() {
 
@@ -77,28 +78,33 @@ public class testController {
         return R.success(null);
     }
 
-    @GetMapping("/user/putest")
+    @GetMapping("/test/user/putest")
     public R<TestEntity> test3() {
 
-//        User user = new User();
-//        user.setName("测试是否能拿到id");
-//        userService.save(user);
-//        System.out.println(user.getId());
         UserVO userVO = new UserVO();
-        userVO.setOpenid("1111");
-        userVO.setId(123L);
+        userVO.setOpenid("1111111111");
+        userVO.setId(1681962715833606145L);
 
-        redisTemplate.opsForValue().set(RedisPrefix.USER + "qjyzT4AUbwlAd-mpBUFbw0j-7Iy-3dol32c4h5eBGoU", userVO);
+        redisTemplate.opsForValue().set(RedisPrefix.USER + "wciI6lmIKZ4WCBSFWu7KDBMffwC_REEN2HAApT9bFPI", userVO);
 
         return R.success(null);
     }
 
-    public static void main(String[] args) throws InterruptedException {
-//
-        String token1 = JwtUtil.getToken("temp", 14L, 10000000);
+    @GetMapping("/test/nopara")
+    public R<String> get(String id) {
+        System.out.println(id);
+        System.out.println("1111111111111111");
+        return R.success("成功");
+    }
 
-        System.out.println(token1);
-
-
+    /**
+     * 测试连接3
+     *
+     * @param stuCertVO
+     * @return
+     */
+    @PostMapping("/test/stuCert")
+    public R<StuCertVO> poTest(@RequestBody StuCertVO stuCertVO) {
+        return R.success(stuCertVO);
     }
 }
