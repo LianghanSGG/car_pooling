@@ -1,5 +1,7 @@
 package com.carpooling.common.pojo.db;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
 import com.carpooling.common.pojo.BaseEntity;
@@ -12,11 +14,12 @@ import java.time.LocalDateTime;
 
 /**
  * 订单表
+ * 下个版本可以把最早出发时间和最晚出发时间改成Integer类型，有了appointmentTime可以忽略时间
  *
  * @author LiangHanSggg
  * @date 2023-07-16 16:18
  */
-@TableName("order")
+@TableName("car_order")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -25,6 +28,7 @@ public class Order extends BaseEntity {
     /**
      * 订单id
      */
+    @TableId(type = IdType.INPUT)
     Long id;
 
     /**
@@ -48,7 +52,7 @@ public class Order extends BaseEntity {
     Integer state;
 
     /**
-     *  始发地
+     * 始发地
      */
     String startPlace;
 

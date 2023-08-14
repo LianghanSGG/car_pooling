@@ -1,14 +1,19 @@
 package com.carpooling.common.pojo.db;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.carpooling.common.pojo.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
 
 /**
  * 批次表
+ *
  * @author LiangHanSggg
  * @date 2023-07-16 17:39
  */
@@ -16,12 +21,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class Batch extends BaseEntity {
 
     /**
      * 批次id
      */
-    @TableId
+    @TableId(type = IdType.INPUT)
     Long id;
 
     /**
@@ -60,10 +66,25 @@ public class Batch extends BaseEntity {
     Integer state;
 
     /**
+     * 成功加入的订单id，冗余字段，不一定有
+     */
+    Long succeedOrderId;
+
+
+    /**
+     * 批次中最晚出发时间 可以最后做通知用的
+     */
+    LocalDateTime latestTime;
+
+    /**
+     * 性别 0男女都有 1纯女 2纯男
+     */
+    Integer sex;
+
+    /**
      * 本次人数
      */
     Integer personNumber;
-
 
 
 }

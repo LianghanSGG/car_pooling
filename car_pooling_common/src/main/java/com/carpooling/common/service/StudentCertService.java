@@ -40,4 +40,12 @@ public interface StudentCertService extends IService<StudentCert> {
      */
     boolean saveStu(StuCertVO stuCertVO);
 
+
+    /**
+     * 获得七牛云上传图片的权限
+     * @param type
+     * @return
+     */
+    String getPicToken(String type);
+
 }

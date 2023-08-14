@@ -38,6 +38,21 @@ public class GlobalExceptionHandler {
         return R.error(e.getMessage());
     }
 
+    @ExceptionHandler(PreCheckException.class)
+    public R<String> preCheckException(Exception e) {
+        return R.fail(e.getMessage());
+    }
+
+    @ExceptionHandler(serviceLogic.class)
+    public R<String> serviceLogicException(Exception e) {
+        return R.fail(e.getMessage());
+    }
+
+    @ExceptionHandler(OrderVerifyException.class)
+    public R<String> orderVerifyException(Exception e) {
+        return R.fail(e.getMessage());
+    }
+
     // post 并且使用@Valid@RequestBody接受参数就会出错
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public R<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
@@ -65,6 +80,7 @@ public class GlobalExceptionHandler {
     /**
      * 用于捕获@RequestParam/@PathVariable参数触发校验规则抛出的异常
      * 如果没加request但是有参数限制的
+     *
      * @param e
      * @return
      */
@@ -78,7 +94,6 @@ public class GlobalExceptionHandler {
         }
         return R.fail(sb.toString());
     }
-
 
 
 }

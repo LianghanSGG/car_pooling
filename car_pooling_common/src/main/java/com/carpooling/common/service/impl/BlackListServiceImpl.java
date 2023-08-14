@@ -1,6 +1,5 @@
 package com.carpooling.common.service.impl;
 
-import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.carpooling.common.mapper.BlackListMapper;
 import com.carpooling.common.pojo.db.BlackList;
@@ -12,10 +11,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 用于关键地方配合权限验证是否完整一起判断是否有资格进行下单
+ * 黑名单会永久的保存在redis中
  *
  * @author LiangHanSggg
  * @date 2023-07-25 19:03
@@ -30,10 +29,7 @@ public class BlackListServiceImpl extends ServiceImpl<BlackListMapper, BlackList
     @Autowired
     RedisTemplate redisTemplate;
 
-    /**
-     * @param userId
-     * @return false不存在 true存在
-     */
+
     @Override
     public boolean checkExist(Long userId) {
         if (redisUtil.ValueExist(RedisPrefix.BLACKLIST)) {
@@ -42,16 +38,17 @@ public class BlackListServiceImpl extends ServiceImpl<BlackListMapper, BlackList
 
         List<BlackList> list = list();
         if (list == null || list.size() == 0) {
+            redisUtil.SetAddNoExpire(RedisPrefix.BLACKLIST, "1");
             return false;
         }
-        int day = RandomUtil.randomInt(14, 32);
+
         boolean flag = false;
         int length = list.size();
         for (int i = 0; i < length; i++) {
             if (!flag) {
                 flag = list.get(i).equals(userId);
             }
-            redisUtil.SetAdd(RedisPrefix.BLACKLIST, day, TimeUnit.DAYS, list.get(i).getUserId());
+            redisUtil.SetAddNoExpire(RedisPrefix.BLACKLIST, list.get(i).getUserId());
         }
 
         return flag;

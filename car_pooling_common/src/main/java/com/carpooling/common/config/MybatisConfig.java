@@ -1,9 +1,7 @@
 package com.carpooling.common.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
-import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
@@ -15,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @author LiangHanSggg
  * @date 2023-06-30 18:13
  */
-@MapperScan("com.carpooling.**.mapper")
+@MapperScan("com.carpooling.*.mapper")
 @Configuration(proxyBeanMethods = false)
 public class MybatisConfig {
 

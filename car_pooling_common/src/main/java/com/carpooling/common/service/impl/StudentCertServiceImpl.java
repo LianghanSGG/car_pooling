@@ -10,15 +10,21 @@ import com.carpooling.common.pojo.vo.StuCertStateVO;
 import com.carpooling.common.pojo.vo.StuCertVO;
 import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.properties.NumberConstants;
+import com.carpooling.common.properties.QnyPicConstants;
 import com.carpooling.common.service.StudentCertService;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.UserContext;
+import com.qiniu.util.Auth;
+import com.qiniu.util.StringMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,6 +40,12 @@ public class StudentCertServiceImpl extends ServiceImpl<StudentCertMapper, Stude
 
     @Autowired
     ApplicationContext applicationContext;
+
+    @Autowired
+    Auth auth;
+
+    @Autowired
+    QnyPicConstants qnyPicConstants;
 
 
     @Override
@@ -105,13 +117,33 @@ public class StudentCertServiceImpl extends ServiceImpl<StudentCertMapper, Stude
         return true;
     }
 
+    @Override
+    public String getPicToken(String type) {
+        LocalDateTime time = LocalDateTime.now();
+        StringBuilder sb = new StringBuilder();
+        sb.append("carpooling/");
+
+        sb.append(time.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+
+        sb.append("/");
+
+        sb.append(UUID.randomUUID().toString().replace("-", "").substring(0, 16) + "." + type);
+
+        // carpooling/2023/7/30 / xxx.type
+        StringMap returnMap = getReturnMap();
+        returnMap.put("saveKey", sb.toString());
+
+        String token = auth.uploadToken(qnyPicConstants.getBucket(), null, qnyPicConstants.getExpireSeconds(), returnMap);
+        return token;
+    }
+
     public StudentCert getLastOne() {
         Long userId = UserContext.get().getId();
         LambdaQueryWrapper<StudentCert> select = Wrappers.lambdaQuery(StudentCert.class)
                 .eq(StudentCert::getUserId, userId)
                 .orderByDesc(StudentCert::getCreateTime)
                 .last("limit 1")
-                .select(StudentCert::getState, StudentCert::getMessage, StudentCert::getId,StudentCert::getUserName,StudentCert::getUserSchoolId);
+                .select(StudentCert::getState, StudentCert::getMessage, StudentCert::getId, StudentCert::getUserName, StudentCert::getUserSchoolId);
 
         return getOne(select);
     }
@@ -119,5 +151,12 @@ public class StudentCertServiceImpl extends ServiceImpl<StudentCertMapper, Stude
     @Transactional(rollbackFor = RuntimeException.class)
     public boolean changeLastOne(StudentCert lastOne, StudentCert newOne) {
         return updateById(lastOne) && save(newOne);
+    }
+
+    public StringMap getReturnMap() {
+        StringMap putPolicy = new StringMap();
+        putPolicy.put("returnBody", "{\"key\": \"$(key)\" }");
+        putPolicy.put("forceSaveKey", true);
+        return putPolicy;
     }
 }

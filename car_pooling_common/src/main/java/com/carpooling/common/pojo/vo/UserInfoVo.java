@@ -71,8 +71,8 @@ public class UserInfoVo {
     /**
      * 等待时间
      */
-    @Min(message = "不能低于0", value = 0)
-    @Max(message = "不能高于30", value = 30)
+    @Min(message = "等待时间不能低于0", value = 0)
+    @Max(message = "等待时间不能高于30", value = 30)
     Integer waitTime;
 
 }

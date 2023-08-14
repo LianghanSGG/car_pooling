@@ -30,10 +30,9 @@ public class ComplainVO {
     /**
      * 问题描述
      */
-    @NotBlank
+    @NotBlank(message = "问题描述不能为空")
     @Size(min = 4, max = 2000, message = "问题描述字数应该大于4小于2000")
     String question;
-
 
 
 }

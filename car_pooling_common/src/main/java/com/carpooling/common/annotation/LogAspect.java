@@ -31,7 +31,7 @@ import java.util.*;
 
 /**
  * 日志切面实现
- * 缺失获得当前线程对应用户的id。
+ * 第二版可以切换为异步日志，但是需要先拿到参数然后log。不要在log中去获得TheadLocal中的值很有可能出错
  */
 @Aspect
 @Component
@@ -65,7 +65,7 @@ public class LogAspect {
 
         UserVO userVO = UserContext.get();
 
-        // todo:格式后期要处理一些
+
         log.info("UserIP:{}，Userid:{}，Module:{}，Operation:{}，Result:{}，Request_type:{}，Class:{}，Method:{}，Parameter:{}, Reponse:{}"
                 , userVO != null ? userVO.getClientIP() : "未知IP", userVO != null ? userVO.getId() : "未知ID", userAction.module(), userAction.operation(), "成功", request.getMethod()
                 , point.getTarget().getClass().getName(), signature.getName(), m1.writeValueAsString(getParameter(method, point.getArgs())), m1.writeValueAsString(result));

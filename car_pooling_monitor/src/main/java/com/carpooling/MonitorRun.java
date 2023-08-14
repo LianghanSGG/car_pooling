@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAsync
 @EnableScheduling
 @EnableTransactionManagement
-public class MonitorRun{
+public class MonitorRun {
 
     @Autowired
     CanalListening canalListening;

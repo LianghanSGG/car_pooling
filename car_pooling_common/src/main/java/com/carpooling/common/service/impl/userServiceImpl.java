@@ -47,12 +47,6 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return getOne(Wrappers.lambdaQuery(User.class).eq(User::getId, userId).select(User::getPhone, User::getSchoolId, User::getOpenid, User::getId).last("limit 1"));
     }
 
-    /**
-     * 我们无需使用到session_key进行解密，因此直接更新
-     *
-     * @param code
-     * @return
-     */
     @Override
     public LoginVo wxLogin(String code) {
         WxLoginEntity wxLoginEntity = null;
@@ -68,8 +62,12 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new RuntimeException("wxLoginEntity IS NULL");
         }
 
-        if (wxLoginEntity.getErrcode() == 40029) {
-            throw new DException("code超时");
+        if (wxLoginEntity.getErrcode() != null) {
+            if (wxLoginEntity.getErrcode() == 40029) {
+                throw new DException("code超时");
+            } else {
+                throw new DException("登录失败");
+            }
         }
 
         LoginVo loginVo = new LoginVo();
@@ -148,13 +146,7 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userInfoVo;
     }
 
-    /**
-     * 更新个人资料
-     *
-     * @param userId
-     * @param userInfoVo
-     * @return
-     */
+
     @Override
     public boolean updateInfo(Long userId, UserInfoVo userInfoVo) {
         User user = new User();
@@ -174,6 +166,14 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setId(userId);
         BeanUtil.copyProperties(userInfoVo, user);
         return updateById(user);
+    }
+
+    @Override
+    public boolean checkReliability(Long userId) {
+
+        return count(Wrappers.lambdaQuery(User.class)
+                .eq(User::getId, userId)
+                .ge(User::getReliabilityRating, 80)) == 1 ? true : false;
     }
 
 

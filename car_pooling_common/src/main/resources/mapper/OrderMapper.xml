@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.carpooling.common.mapper.OrderMapper">
+
+    <select id="conditionList" resultType="com.carpooling.common.pojo.db.Order">
+        select `id`,
+        `start_place`,
+        `end_place`,
+        `appointment_time`,
+        `earliest_time`,
+        `latest_time`,
+        `already_number`,
+        `target_number`,
+        `sex`,
+        `auto_join` from `car_order` where `deleted` = 0 and `state` = 0 and `start_place` =
+        #{condition.startPlace} and `end_place` =
+        #{condition.endPlace} and `latest_time` > #{condition.startTime}
+        <if test="condition.sex != null">
+            and sex = #{condition.sex}
+        </if>
+        <if test="condition.alreadyNumber != null">
+            and `target_number`-`already_number` >= #{condition.alreadyNumber}
+        </if>
+        limit #{condition.index},#{condition.page}
+    </select>
+</mapper>

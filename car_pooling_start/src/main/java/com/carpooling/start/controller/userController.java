@@ -68,10 +68,10 @@ public class userController {
 
     /**
      * 修改个人信息接口
-     * @apiNote 会判断是否符合时间要求
      *
      * @param userInfoVo
      * @return
+     * @apiNote 会判断是否符合时间要求
      */
     @Log(module = "用户模块", operation = "修改个人信息")
     @PostMapping("/info/update")
@@ -90,10 +90,10 @@ public class userController {
 
     /**
      * 添加个人资料，
-     * @apiNote 在完成微信官网的注册以后应该调用这个接口
      *
      * @param userInfoVo
      * @return
+     * @apiNote 在完成微信官网的注册以后应该调用这个接口
      */
     @Log(module = "用户模块", operation = "新增用户个人信息")
     @PostMapping("/info/add")

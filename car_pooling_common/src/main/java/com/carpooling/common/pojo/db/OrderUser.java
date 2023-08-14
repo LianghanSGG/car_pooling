@@ -7,16 +7,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 
 /**
  * 订单、用户关系表
- * 可以用于查询历史记录
- * 实际上这个表可以和passenger合并。
- * 但是因为passenger数据出入的程度会比这个表大，多方面考虑下再建这一张表，这张表的数据只会在订单完成之后进行写入。
- * 如果后期passenger数据变化速度不大可将俩表合并。
- *
+ * 这个表充当乘客、历史订单俩个职责
+ * 拼主应当在创建完订单的时候在这个表中也创建一条记录：
+ *      如果不创建。那么检索历史订单的时候需要去order表和这张表俩张一起检索
+ *      创建，只需要多加一行记录，可以减少查询。但是要使用事务对俩张表中的记录的保证一致性。
  * @author LiangHanSggg
  * @date 2023-07-16 15:15
  */
@@ -24,6 +24,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("order_user")
+@Accessors(chain = true)
 public class OrderUser extends BaseEntity {
 
     @JsonIgnore
@@ -44,6 +45,36 @@ public class OrderUser extends BaseEntity {
     Long orderId;
 
     /**
+     * 用户姓名
+     */
+    String userName;
+
+    /**
+     * 批次中的性别 0 男女都有 1纯女 1纯男
+     */
+    Integer userSex;
+
+    /**
+     * 用户电话号
+     */
+    String userPhone;
+
+    /**
+     * 用户的微信号
+     */
+    String userWechatAccount;
+
+    /**
+     * 用户的openid
+     */
+    String userOpenid;
+
+    /**
+     * 用户的角色状态:0 拼主 1加入者
+     */
+    Integer userRole;
+
+    /**
      * 出发地
      */
     String startPlace;
@@ -59,8 +90,9 @@ public class OrderUser extends BaseEntity {
     LocalDate appointmentTime;
 
     /**
-     * 状态 0拼主 1加入者
+     * 状态 0加入 1结束 2退出 3被t
      */
     Integer state;
+
 
 }

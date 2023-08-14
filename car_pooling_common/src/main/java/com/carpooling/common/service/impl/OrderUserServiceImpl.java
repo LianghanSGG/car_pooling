@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.carpooling.common.mapper.OrderUserMapper;
-import com.carpooling.common.pojo.BaseEntity;
 import com.carpooling.common.pojo.db.OrderUser;
 import com.carpooling.common.service.OrderUserService;
 import com.carpooling.common.util.UserContext;
@@ -21,10 +20,13 @@ public class OrderUserServiceImpl extends ServiceImpl<OrderUserMapper, OrderUser
 
     @Override
     public List<OrderUser> getHistory(int index, int size) {
-        Long userid = UserContext.get().getId();
+        Long userId = UserContext.get().getId();
         Page<OrderUser> p = new Page<>(index, size);
-        page(p, Wrappers.lambdaQuery(OrderUser.class).eq(OrderUser::getUserId, userid).orderByDesc(BaseEntity::getCreateTime));
+        page(p, Wrappers.lambdaQuery(OrderUser.class)
+                .eq(OrderUser::getUserId, userId)
+                .ne(OrderUser::getState, 0));
         return p.getRecords();
     }
+
 
 }

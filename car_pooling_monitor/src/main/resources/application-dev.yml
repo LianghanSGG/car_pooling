@@ -53,6 +53,15 @@ ordinary:
     prefix: "ordExecutor-"
 
 
+file:
+  qiniuy:
+    accessKey: cSFzMweTWW4u4U5XqKiWuunZdfUETgyHYg497i77
+    secretKey: C54rVz9ZTr_lcYJAMBmaFAkrfOVj4s8vGFrAt9j7
+    bucket: weacsoft
+    url: http://qny.chatea-lovely.top/
+    expireSeconds: 600
+
+
 canal:
   hostname: "43.138.156.106"
   port: 11111

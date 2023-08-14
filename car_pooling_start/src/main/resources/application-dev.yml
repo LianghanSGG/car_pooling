@@ -54,10 +54,11 @@ spring:
       testWhileIdle: true
       testOnBorrow: false
       testOnReturn: false
-      pool-prepared-statements: true
+      pool-prepared-statements: false
       max-pool-prepared-statement-per-connection-size: 20
 
       filters: stat,wall
+
 
       stat-view-servlet:
         enabled: true
@@ -80,6 +81,7 @@ spring:
           enabled: true
           config:
             drop-table-allow: false
+#      connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
 
 # 根据具体设备进行更换
 ordinary:
@@ -90,6 +92,14 @@ ordinary:
     keepAliveSeconds: 10
     prefix: "ordExecutor-"
 
+
+file:
+  qiniuy:
+    accessKey: cSFzMweTWW4u4U5XqKiWuunZdfUETgyHYg497i77
+    secretKey: C54rVz9ZTr_lcYJAMBmaFAkrfOVj4s8vGFrAt9j7
+    bucket: weacsoft
+    url: http://qny.chatea-lovely.top/
+    expireSeconds: 600
 
 canal:
   hostname: "43.138.156.106"
@@ -103,3 +113,23 @@ wx:
   config:
     appid: wx019793ec6de85a22
     secret: 7eecc49bf3e28fe96a74ead6d99daf4c
+
+sms:
+  tencent:
+    #腾讯云的accessKey
+    accessKeyId: AKIDBF7e0BAB0by73lFVYNzHUXN1UmsmT2Si
+    #腾讯云的accessKeySecret
+    accessKeySecret: 您的accessKeySecret
+    #短信签名
+    signature: 测试签名
+    #模板ID 用于发送固定模板短信使用
+    templateId: SMS_215125134
+    #模板变量 上述模板的变量
+    templateName: code
+    connTimeout: 60
+    sdkAppId: 1400841574
+    territory: ap-guangzhou
+    requestUrl: sms.tencentcloudapi.com
+    action: SendSms
+    version: 2021-01-11
+

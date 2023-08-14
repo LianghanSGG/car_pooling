@@ -25,7 +25,7 @@ public class StuCertVO {
      * 学生输入的学号
      */
     @NotNull(message = "学号不能为空")
-    @Size(max = 12, message = "长度过长")
+    @Size(max = 12, message = "学号长度过长")
     String userSchoolId;
 
     /**

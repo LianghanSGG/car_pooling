@@ -63,6 +63,16 @@ public class RedisUtil {
     }
 
     /**
+     * String类型的减少
+     *
+     * @param key Redis Key
+     * @param nu  要增长的值
+     */
+    public void StringDecrement(String key, long nu) {
+        redisTemplate.opsForValue().decrement(key, nu);
+    }
+
+    /**
      * 检查是否存在于Set
      *
      * @param key
@@ -86,6 +96,26 @@ public class RedisUtil {
         redisTemplate.expire(key, timeout, unit);
     }
 
+    /**
+     * 将元素添加进无限时长Set
+     *
+     * @param key   Redis Key
+     * @param value 值，可多个
+     */
+    public void SetAddNoExpire(String key, Object... value) {
+        redisTemplate.opsForSet().add(key, value);
+    }
+
+
+    /**
+     * 移除Set集合中的元素
+     *
+     * @param key   Redis Key
+     * @param value 值，可多个
+     */
+    public void SetDeleted(String key, Object... value) {
+        redisTemplate.opsForSet().remove(key, value);
+    }
 
     /**
      * 使用异步进行删除，不会抛出异常
@@ -103,4 +133,21 @@ public class RedisUtil {
     }
 
 
+    /**
+     * 使用异步加入，不会抛异常
+     *
+     * @param key     Redis Key
+     * @param value   传入的值
+     * @param timeout 时间参数
+     * @param unit    时间单位
+     */
+    @Async("ordinaryThreadPool")
+    public void AsyncStringADD(String key, Object value, long timeout, TimeUnit unit) {
+        try {
+            redisTemplate.opsForValue().set(key, value);
+            redisTemplate.expire(key, timeout, unit);
+        } catch (Exception e) {
+            log.info("Redis异步添加String出现错误:方法:[{}];参数:[{},{}];异常信息:[{}]", "AsyncStringADD", key, value, e.getMessage());
+        }
+    }
 }

@@ -3,13 +3,13 @@ package com.carpooling.start.controller;
 
 import com.carpooling.common.pojo.R;
 import com.carpooling.common.pojo.TestEntity;
+import com.carpooling.common.pojo.db.Order;
 import com.carpooling.common.pojo.vo.StuCertVO;
-import com.carpooling.common.pojo.vo.UserVO;
-import com.carpooling.common.prefix.RedisPrefix;
+import com.carpooling.common.service.BlackListService;
+import com.carpooling.common.service.OrderService;
 import com.carpooling.common.service.UserService;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.UserContext;
-import com.carpooling.start.service.ThService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 项目启动连接测试类
@@ -27,10 +28,9 @@ import java.time.LocalDateTime;
 @Validated
 @RestController
 @Slf4j
+@RequestMapping("/mock")
 public class testController {
 
-    @Autowired
-    ThService thService;
 
     @Autowired
     RedisUtil redisUtil;
@@ -41,13 +41,20 @@ public class testController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    BlackListService blackListService;
+
+    @Autowired
+    OrderService orderService;
+
+
     /**
-     * 连接测试1
+     * 连接测试
      *
      * @param id
      * @return
      */
-    @GetMapping("/testLinking")
+    @GetMapping("/test/Linking")
     public R<TestEntity> test(@RequestParam("id") String id) {
 
         TestEntity testEntity = new TestEntity();
@@ -61,47 +68,33 @@ public class testController {
 
     /**
      * 连接测试2
+     * 测试连接数据库
      *
      * @return
+     * @apiNote 测试连接数据库
      */
-    @GetMapping("/test")
-    public R<TestEntity> test2() {
-
-        redisUtil.AsyncDeleted("1");
-        System.out.println("主线程开始睡眠");
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        return R.success(null);
-    }
-
-    @GetMapping("/test/user/putest")
-    public R<TestEntity> test3() {
-
-        UserVO userVO = new UserVO();
-        userVO.setOpenid("1111111111");
-        userVO.setId(1681962715833606145L);
-
-        redisTemplate.opsForValue().set(RedisPrefix.USER + "wciI6lmIKZ4WCBSFWu7KDBMffwC_REEN2HAApT9bFPI", userVO);
-
-        return R.success(null);
-    }
-
-    @GetMapping("/test/nopara")
-    public R<String> get(String id) {
-        System.out.println(id);
-        System.out.println("1111111111111111");
-        return R.success("成功");
+    @GetMapping("/test/LinkingDB")
+    public R<List<Order>> test2() {
+        return R.success(orderService.list());
     }
 
     /**
      * 测试连接3
      *
+     * @return
+     * @apiNote 测试连接redis id=1一直是常驻redis的
+     */
+    @GetMapping("/test/user/putest")
+    public R test3(@RequestParam("id") String id) {
+        return R.success(blackListService.checkExist(Long.parseLong(id)));
+    }
+
+    /**
+     * 测试连接4
+     *
      * @param stuCertVO
      * @return
+     * @apiNote 发过来什么就回去什么
      */
     @PostMapping("/test/stuCert")
     public R<StuCertVO> poTest(@RequestBody StuCertVO stuCertVO) {

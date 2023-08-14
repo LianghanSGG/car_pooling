@@ -14,19 +14,19 @@ public class UserEvent extends ApplicationEvent {
     //0 是插入事件 1是更新事件
     private int flag;
 
-    private CanalEntry.Entry entry;
+    private CanalEntry.RowChange rowChage;
 
-    public UserEvent(Object source,int i, CanalEntry.Entry entry) {
+    public UserEvent(Object source,int i, CanalEntry.RowChange rowChage) {
         super(source);
         this.flag = i;
-        this.entry = entry;
+        this.rowChage = rowChage;
     }
 
     public int getFlag() {
         return flag;
     }
 
-    public CanalEntry.Entry getEntry() {
-        return entry;
+    public CanalEntry.RowChange getEntry() {
+        return rowChage;
     }
 }

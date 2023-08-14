@@ -23,4 +23,18 @@ public class RedisPrefix {
     public static final String BLACKLIST = "user:black";
     // 学生验证的限制时长
     public static final String STUDENT_CERT_TIME = "user:cert:";
+    // 电话验证的次数限制
+    public static final String PHONE_VERIFY_TIME = "user:phone:";
+    // 验证码
+    public static final String PHONE_VERIFY_CODE = "user:phone:code:";
+    // 订单提交的权限
+    public static final String ORDER_ACCESS = "user:order:token:";
+    // 创建订单的次数限制
+    public static final String ORDER_LIMIT = "user:order:";
+    // 发起批次的次数限制
+    public static final String BATCH_LIMIT = "user:batch:";
+    // 车次的简略信息
+    public static final String ORDER_BRIEF_INFO = "order:brief:info:";
+    // 自动加入每天的次数限制
+    public static final String ORDER_AUTO_JOIN_LIMIT = "user:order:auto:join:";
 }

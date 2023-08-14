@@ -1,5 +1,6 @@
 package com.carpooling.common.pojo.db;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.carpooling.common.pojo.BaseEntity;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @TableName("blacklist")
 public class BlackList extends BaseEntity {
 
-    @TableId
+    @TableId(type = IdType.AUTO)
     Long id;
 
 

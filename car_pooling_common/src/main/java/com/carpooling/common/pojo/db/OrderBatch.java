@@ -7,11 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 /**
  * 订单批次关系表
+ * 一些冗余字段感觉可以省略掉，第二版可以根据实际情况进行修改 2023-08-07
+ *
+ * orderBatch以后是最有可能需要分表的。24小时3次机会，一次5条记录。一人一天至多15条。
  *
  * @author LiangHanSggg
  * @date 2023-07-16 16:12
@@ -34,42 +34,20 @@ public class OrderBatch extends BaseEntity {
     Long batchId;
 
     /**
-     *  订单id
+     * 订单id
      */
     Long orderId;
 
     /**
-     * 始发地
+     * 拥有者的id
      */
-    String startPlace;
-
-    /**
-     * 目的地
-     */
-    String endPlace;
-
-    /**
-     * 预约时间 某年某月某日 2023-07-09。
-     */
-    LocalDate appointment;
-
-    /**
-     * 最早出发时间
-     */
-    LocalDateTime earliest_time;
-
-    /**
-     * 最晚出发时间
-     */
-    LocalDateTime latest_time;
+    Long ownerId;
 
     /**
      * 状态:
-     * 用户申请0,拼主确认1，拼主否定2,用户同意3,用户自主取消4, 系统取消5
+     * 用户申请0,拼主确认1，拼主否定2,用户自主取消3,系统取消4,
      */
     Integer state;
-
-
 
 
 }

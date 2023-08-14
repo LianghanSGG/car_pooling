@@ -9,16 +9,19 @@ import com.carpooling.common.service.StudentCertService;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 /**
- *
  * @author LiangHanSggg
  * @date 2023-07-28 17:09
  */
+@Validated
 @RestController
 @RequestMapping("/stu")
 public class StuController {
@@ -74,6 +77,26 @@ public class StuController {
             return R.fail("失败");
         }
 
+    }
+
+    /**
+     * 获得上传的权限
+     *
+     * @param type
+     * @return
+     * @apiNote 权限默认是10分钟的有效期，自己测试的时候要试试看如果过期了会怎么样了,记住要限制上传图片的大小！！！！
+     * 图片要上传到七牛云的图片存储服务，需要先来这里获得token。拿着token去七牛云上传然后七牛会返回的参数叫做key。key就是文件的路径和名字，拿着key和(CDNAddress)拼接就可以访问了。
+     * 一般看到图片会消耗掉流量，流量是要钱的，因此如果你想看看上传是否成功你得找我要一个前缀(CDNAddress)你才能看到图片
+     */
+    @Log(module = "学生认证模块", operation = "获得图片上传权限")
+    @GetMapping("/pic")
+    public R<String> getPicToken(@NotEmpty(message = "type不能为空")
+                                 @Size(max = 10, message = "长度不能过长")
+                                 @RequestParam("type") String type) {
+        String picToken = studentCertService.getPicToken(type);
+        if (Objects.isNull(picToken)) return R.fail("失败");
+
+        return R.success(picToken);
     }
 
 

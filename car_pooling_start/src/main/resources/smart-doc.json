@@ -1,6 +1,6 @@
 {
   "outPath": "D:\\carpooling",
-  "serverUrl": "http://43.138.156.106",
+  "serverUrl": "https://www.carpooling.top/api",
   "allInOne": true,
   "isStrict": false,
   "coverOld": true,
@@ -46,6 +46,14 @@
     {
       "name": "特殊模块",
       "apis": "com.carpooling.common.controller.commonController"
+    },
+    {
+      "name": "手机号认证模块",
+      "apis": "com.carpooling.phone.controller.PhoneController"
+    },
+    {
+      "name": "批次模块",
+      "apis": "com.carpooling.order.controller.BatchController"
     }
   ]
 }

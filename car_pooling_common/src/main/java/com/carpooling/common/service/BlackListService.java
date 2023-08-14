@@ -9,5 +9,11 @@ import com.carpooling.common.pojo.db.BlackList;
  */
 public interface BlackListService extends IService<BlackList> {
 
+    /**
+     * 检查是否在黑名单中
+     *
+     * @param userId
+     * @return false不存在 true存在
+     */
     boolean checkExist(Long userId);
 }

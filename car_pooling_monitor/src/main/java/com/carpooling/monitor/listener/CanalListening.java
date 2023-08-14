@@ -4,6 +4,7 @@ import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.Message;
+import com.carpooling.monitor.service.Event.BlackListEvent;
 import com.carpooling.monitor.service.Event.QuestionEvent;
 import com.carpooling.monitor.service.Event.UserEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,9 @@ import java.util.Objects;
 @Component
 public class CanalListening implements ApplicationRunner {
 
+    // TODO: 2023/8/11 如果Batch出现新增事件，应该加入到Redis的延时队列，时间到的时候自动关闭订单。并且发送通知！
+    // TODO: 2023/8/11 订单表出现新数据和上方一样加入到延时队列，到期自动关闭订单，并且消息推送！ 
+    // TODO: 2023/8/12 用户加入成功单子之后，应该通知单子的所有者，发生了变化。 
     @Value("${canal.hostname}")
     private String hostname;
     @Value("${canal.port}")
@@ -46,7 +50,6 @@ public class CanalListening implements ApplicationRunner {
 
     @Autowired
     private ApplicationContext applicationContext;
-
 
 
     public void startListening() {
@@ -66,7 +69,7 @@ public class CanalListening implements ApplicationRunner {
                     try {
                         Thread.currentThread().sleep(2000);
                     } catch (InterruptedException e) {
-                        log.info("线程出现异常");
+                        log.info("监听线程出现异常");
                     }
                 } else {
                     distribute(message.getEntries());
@@ -97,21 +100,21 @@ public class CanalListening implements ApplicationRunner {
                 rowChage = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
             } catch (Exception e) {
                 log.info("entry的反序列化出现异常{}", entry);
+                continue;
             }
 
-            //获得表名
+
             String tableName = entry.getHeader().getTableName();
-            //获得操作类型
             CanalEntry.EventType eventType = rowChage.getEventType();
 
-            System.out.println("表名:---------------" + tableName);
 
+            log.info("表名：{} 出现 {}事件", tableName, eventType);
             if (rowChage.getIsDdl()) {
                 log.info("出现DDL语句：{}", rowChage.getSql());
                 continue;
             }
 
-            ApplicationEvent event = getEvent(tableName, eventType, entry);
+            ApplicationEvent event = getEvent(tableName, eventType, rowChage);
             if (Objects.isNull(event)) continue;
 
             applicationContext.publishEvent(event);
@@ -121,7 +124,7 @@ public class CanalListening implements ApplicationRunner {
 
     }
 
-    private ApplicationEvent getEvent(String tableName, CanalEntry.EventType eventType, CanalEntry.Entry entry) {
+    private ApplicationEvent getEvent(String tableName, CanalEntry.EventType eventType, CanalEntry.RowChange rowChage) {
         int flag = 2;
         if (eventType == CanalEntry.EventType.INSERT) {
             flag = 0;
@@ -132,9 +135,11 @@ public class CanalListening implements ApplicationRunner {
         }
         //后期填上去
         if ("questions".equals(tableName)) {
-            return new QuestionEvent(this, flag, entry);
+            return new QuestionEvent(this, flag, rowChage);
         } else if ("user".equals(tableName)) {
-            return new UserEvent(this, flag, entry);
+            return new UserEvent(this, flag, rowChage);
+        } else if ("blacklist".equals(tableName)) {
+            return new BlackListEvent(this, flag, rowChage);
         } else {
             return null;
         }

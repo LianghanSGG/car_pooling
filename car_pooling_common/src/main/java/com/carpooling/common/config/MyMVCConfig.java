@@ -1,7 +1,9 @@
 package com.carpooling.common.config;
 
 
+import com.carpooling.common.interceptor.IPInterceptor;
 import com.carpooling.common.interceptor.LoginInterceptor;
+import com.carpooling.common.interceptor.MockInter;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +32,12 @@ public class MyMVCConfig implements WebMvcConfigurer {
     @Resource
     LoginInterceptor loginInterceptor;
 
+    @Resource
+    MockInter mockInter;
+
+    @Resource
+    IPInterceptor ipInterceptor;
+
     @Autowired
     ObjectMapper objectMapper;
 
@@ -38,7 +46,13 @@ public class MyMVCConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/user/login");
+                .excludePathPatterns("/user/login", "/druid/**", "/mock/**");
+
+        registry.addInterceptor(mockInter)
+                .addPathPatterns("/mock/**");
+
+        registry.addInterceptor(ipInterceptor)
+                .addPathPatterns("/user/login", "/druid/**");
 
     }
 

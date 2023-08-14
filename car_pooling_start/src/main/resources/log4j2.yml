@@ -1,7 +1,7 @@
 #日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL
 Configuration:
   #  这个用于设置log4j2自身内部的信息输出
-  status: warn
+  status: INFO
   name: log4j2config
   #记得修改位置
   properties:
@@ -14,7 +14,8 @@ Configuration:
         value: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %m%n"
 
       - name: FILE_PATH
-        value: log
+#        value: D:\weacsoft_car
+        value: /software/carpooling_jar
 
   appenders:
     #  输出控制台日志的配置
@@ -75,7 +76,7 @@ Configuration:
   # 然后定义loggers，只有定义了logger并引入的appender，appender才会生效
   Loggers:
     Root:
-      level: info
+      level: INFO
       AppenderRef:
         - ref: Console
         - ref: errorfile
@@ -87,7 +88,7 @@ Configuration:
         additivity: false
         #  定义该logger的输出目的地
         AppenderRef:
-          ref: Console
+          - ref: Console
       - name: "com.school.common.log.LogAspect"
         level: info
         additivity: false

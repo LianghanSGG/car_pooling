@@ -1,5 +1,6 @@
 package com.carpooling.common.pojo.db;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.carpooling.common.pojo.BaseEntity;
@@ -20,7 +21,7 @@ public class Question extends BaseEntity {
     /**
      * id
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     Integer id;
 
     /**

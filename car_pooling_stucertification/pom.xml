@@ -22,6 +22,7 @@
             <artifactId>car_pooling_common</artifactId>
             <version>${project.version}</version>
         </dependency>
+
     </dependencies>
 
 </project>
