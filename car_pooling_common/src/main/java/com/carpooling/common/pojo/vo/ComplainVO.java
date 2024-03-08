@@ -24,7 +24,7 @@ public class ComplainVO {
     /**
      * 投诉者的id id1;id2;id3;id4  注意最后是没有;
      */
-    @Size(min = 0, max = 79, message = "id数不可过多")
+    @Size(min = 0, max = 800, message = "id数不可过多")
     String complainId;
 
     /**

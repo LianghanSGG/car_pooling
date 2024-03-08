@@ -76,7 +76,8 @@ public class OrderUserServiceImpl extends ServiceImpl<OrderUserMapper, OrderUser
                 }
 
             } else {
-                passengerVO.setUserName(orderUser.getUserName().substring(0, 1) + "同学")
+                passengerVO.setUserId(orderUser.getUserId())
+                        .setUserName(orderUser.getUserName().substring(0, 1) + "同学")
                         .setPhone(DesensitizedUtil.mobilePhone(orderUser.getUserPhone()))
                         .setSex(orderUser.getUserSex());
             }

@@ -82,7 +82,7 @@ public class OrderController {
      */
     @Log(module = "订单模块", operation = "获得订单列表")
     @GetMapping("/orderlist")
-    public R<List<OrderInfoVO>> getOrderList(@RequestParam("index") @Min(1) @Max(50) int index,
+    public R getOrderList(@RequestParam("index") @Min(1) @Max(50) int index,
                                              @RequestParam("page") @Min(1) @Max(10) int page) {
         return R.success(orderService.orderList(index, page));
     }
@@ -93,7 +93,7 @@ public class OrderController {
      */
     @Log(module = "订单模块", operation = "条件查询订单列表")
     @PostMapping("/orderlist")
-    public R<List<OrderInfoVO>> conditionOrderList(@Valid @RequestBody OderListConditionVO oderListConditionVO) {
+    public R conditionOrderList(@Valid @RequestBody OderListConditionVO oderListConditionVO) {
         int i = oderListConditionVO.getSex().intValue();
         if (i == 0 || i == 1 || i == 2) {
             return R.success(orderService.conditionOrder(oderListConditionVO));

@@ -28,9 +28,7 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -71,7 +69,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     static DateTimeFormatter time_formatter = DateTimeFormatter.ofPattern("HH:mm");
 
     @Override
-    public List<OrderInfoVO> orderList(int index, int size) {
+    public Map<String, Object> orderList(int index, int size) {
         LambdaQueryWrapper<Order> wrapper = Wrappers.lambdaQuery(Order.class)
                 .gt(Order::getLatestTime, LocalDateTime.now())
                 .eq(Order::getState, 0)
@@ -85,15 +83,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
         Long userId = UserContext.get().getId();
-        return getOrderInfoVO(records, userId);
+        Map<String, Object> res = new HashMap<>();
+        res.put("records", getOrderInfoVO(records, userId));
+        res.put("total", p.getTotal());
+        return res;
     }
 
     @Override
-    public List<OrderInfoVO> conditionOrder(OderListConditionVO condition) {
+    public Map<String, Object> conditionOrder(OderListConditionVO condition) {
         condition.setIndex((condition.getIndex().intValue() - 1) * condition.getPage());
         List<Order> orders = orderMapper.conditionList(condition);
         if (orders == null || orders.isEmpty()) return null;
-        return getOrderInfoVO(orders, UserContext.get().getId());
+        Map<String, Object> res = new HashMap<>();
+        res.put("records", getOrderInfoVO(orders, UserContext.get().getId()));
+        res.put("total", orders.size());
+        return res;
     }
 
     @Override

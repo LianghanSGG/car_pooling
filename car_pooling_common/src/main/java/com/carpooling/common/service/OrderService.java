@@ -5,6 +5,7 @@ import com.carpooling.common.pojo.db.Order;
 import com.carpooling.common.pojo.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author LiangHanSggg
@@ -18,7 +19,7 @@ public interface OrderService extends IService<Order> {
      *
      * @return
      */
-    List<OrderInfoVO> orderList(int index, int size);
+    Map<String,Object> orderList(int index, int size);
 
     /**
      * 有筛选条件的获得首页订单列表
@@ -26,7 +27,7 @@ public interface OrderService extends IService<Order> {
      * @param condition
      * @return
      */
-    List<OrderInfoVO> conditionOrder(OderListConditionVO condition);
+    Map<String,Object> conditionOrder(OderListConditionVO condition);
 
     /**
      * 获得上传的token，解决重复提交问题
