@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PreCheckException.class)
     public R<String> preCheckException(Exception e) {
-        return R.fail(e.getMessage());
+        return R.data_error(e.getMessage());
     }
 
     @ExceptionHandler(serviceLogic.class)

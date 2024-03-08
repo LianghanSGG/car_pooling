@@ -212,7 +212,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             throw new RuntimeException("非自动加入不应该请求这个接口");
         }
 
-        if (targetOrder.getLatestTime().isAfter(LocalDateTime.now())) {
+        if (targetOrder.getLatestTime().isBefore(LocalDateTime.now())) {
             throw new OrderVerifyException("已经超过最晚发车时间");
         }
         if (LocalDateTimeUtil.between(targetOrder.getLatestTime(), LocalDateTime.now()).toMinutes() <= 3) {

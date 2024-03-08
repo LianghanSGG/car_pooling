@@ -1,20 +1,15 @@
 package com.carpooling.start.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.carpooling.common.annotation.Log;
 import com.carpooling.common.pojo.R;
+import com.carpooling.common.pojo.db.FeedBack;
 import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.FeedBackService;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.SensitiveFilterService;
 import com.carpooling.common.util.UserContext;
-
-
-
-
-
-
-
-
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -22,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author LiangHanSggg
@@ -104,6 +97,28 @@ public class FeedbackController {
         } else {
             res.put("state", 0 + "");
         }
+        return R.success(res);
+    }
+
+    /**
+     * 检查是否有建议回信
+     *
+     * @return
+     */
+    @GetMapping("/check")
+    public R<List<String>> checkComplain() {
+        String userOpenId = UserContext.get().getOpenid();
+        LambdaQueryWrapper<FeedBack> eq = Wrappers.lambdaQuery(FeedBack.class)
+                .eq(FeedBack::getUserOpenid, userOpenId)
+                .eq(FeedBack::getAccepted, 1);
+        List<FeedBack> list = feedBackService.list(eq);
+        List<String> res = new LinkedList<>();
+
+        list.forEach(e -> {
+            String s = String.valueOf(e.getId());
+            res.add(s);
+        });
+
         return R.success(res);
     }
 

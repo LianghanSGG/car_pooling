@@ -1,7 +1,10 @@
 package com.carpooling.start.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.carpooling.common.annotation.Log;
 import com.carpooling.common.pojo.R;
+import com.carpooling.common.pojo.db.Complain;
 import com.carpooling.common.pojo.vo.ComplainVO;
 import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.ComplainService;
@@ -14,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author LiangHanSggg
@@ -98,4 +99,26 @@ public class ComplainController {
         return R.success(res);
     }
 
+    /**
+     * 检查是否有投诉回信
+     *
+     * @return
+     */
+    @GetMapping("/check")
+    public R<List<String>> checkComplain() {
+        Long userId = UserContext.get().getId();
+        LambdaQueryWrapper<Complain> eq = Wrappers.lambdaQuery(Complain.class)
+                .eq(Complain::getUserId, userId)
+                .eq(Complain::getAccepted, 1)
+                .select(Complain::getId);
+        List<Complain> list = complainService.list(eq);
+        List<String> res = new LinkedList<>();
+
+        list.forEach(e -> {
+            String s = String.valueOf(e.getId());
+            res.add(s);
+        });
+
+        return R.success(res);
+    }
 }

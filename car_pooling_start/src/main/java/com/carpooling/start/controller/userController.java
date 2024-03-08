@@ -10,6 +10,7 @@ import com.carpooling.common.service.UserService;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,9 @@ public class userController {
 
     @Autowired
     RedisUtil redisUtil;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
     /**
      * 用户登录接口
@@ -104,5 +108,14 @@ public class userController {
         }
     }
 
-
+    /**
+     * 获得通告推送的内容
+     *
+     * @return
+     */
+    @GetMapping("getgonggao")
+    public R getgonggao() {
+        String gonggao = (String) redisTemplate.opsForValue().get("gonggao");
+        return R.success(gonggao);
+    }
 }
