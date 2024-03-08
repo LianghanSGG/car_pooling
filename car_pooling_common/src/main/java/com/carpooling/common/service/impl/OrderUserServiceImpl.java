@@ -19,7 +19,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author LiangHanSggg
@@ -34,13 +36,16 @@ public class OrderUserServiceImpl extends ServiceImpl<OrderUserMapper, OrderUser
     static DateTimeFormatter time_formatter = DateTimeFormatter.ofPattern("HH:mm");
 
     @Override
-    public List<OrderUser> getHistory(int index, int size) {
+    public Map<String, Object> getHistory(int index, int size) {
         Long userId = UserContext.get().getId();
         Page<OrderUser> p = new Page<>(index, size);
         page(p, Wrappers.lambdaQuery(OrderUser.class)
                 .eq(OrderUser::getUserId, userId)
                 .ne(OrderUser::getState, 0).orderByDesc(OrderUser::getAppointmentTime));
-        return p.getRecords();
+        Map<String, Object> res = new HashMap<>();
+        res.put("records", p.getRecords());
+        res.put("total", p.getTotal());
+        return res;
     }
 
     @Override

@@ -5,7 +5,6 @@ import cn.hutool.core.date.LocalDateTimeUtil;
 import com.carpooling.common.annotation.Log;
 import com.carpooling.common.annotation.PreCheck;
 import com.carpooling.common.pojo.R;
-import com.carpooling.common.pojo.db.OrderUser;
 import com.carpooling.common.pojo.vo.*;
 import com.carpooling.common.service.BlackListService;
 import com.carpooling.common.service.OrderService;
@@ -51,8 +50,8 @@ public class OrderController {
      */
     @Log(module = "订单模块", operation = "获得历史订单")
     @GetMapping("/history")
-    public R<List<OrderUser>> getHistory(@RequestParam("index") @Min(1) @Max(50) int index,
-                                         @RequestParam("page") @Min(1) @Max(10) int page) {
+    public R getHistory(@RequestParam("index") @Min(1) @Max(50) int index,
+                        @RequestParam("page") @Min(1) @Max(10) int page) {
         return R.success(orderUserService.getHistory(index, page));
 
     }
@@ -83,7 +82,7 @@ public class OrderController {
     @Log(module = "订单模块", operation = "获得订单列表")
     @GetMapping("/orderlist")
     public R getOrderList(@RequestParam("index") @Min(1) @Max(50) int index,
-                                             @RequestParam("page") @Min(1) @Max(10) int page) {
+                          @RequestParam("page") @Min(1) @Max(10) int page) {
         return R.success(orderService.orderList(index, page));
     }
 
