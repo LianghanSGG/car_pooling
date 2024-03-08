@@ -1,6 +1,5 @@
 package com.carpooling.phone.controller;
 
-import cn.hutool.bloomfilter.BitMapBloomFilter;
 import com.carpooling.common.annotation.Log;
 import com.carpooling.common.pojo.R;
 import com.carpooling.common.pojo.vo.PhoneCodeVerifyVO;
@@ -22,7 +21,7 @@ import java.util.Objects;
  */
 @Validated
 @RestController
-@RequestMapping("/test/phone")
+@RequestMapping("/phone")
 public class PhoneController {
 
     @Autowired
@@ -40,13 +39,14 @@ public class PhoneController {
     /**
      * 发送验证码,有效期15分钟
      *
-     * @param phoneCodeVerifyVO
+     * @param
      * @return
      */
     @Log(module = "电话验证模块", operation = "发送验证码")
     @GetMapping("/send")
-    public R getMessage(@RequestBody PhoneCodeVerifyVO phoneCodeVerifyVO) {
-
+    public R getMessage(@RequestParam String phone) {
+        PhoneCodeVerifyVO phoneCodeVerifyVO = new PhoneCodeVerifyVO();
+        phoneCodeVerifyVO.setPhone(phone);
         Long id = UserContext.get().getId();
         if (blackListService.checkExist(id)) {
             return R.success("已经进入黑名单，有问题反馈");
@@ -55,10 +55,9 @@ public class PhoneController {
         return R.success(phoneVerifySuccessService.send(phoneCodeVerifyVO.getPhone()));
     }
 
-    // TODO: 2023/8/5 进行测试！关于校验的
+
     /**
-     * 校验验证码
-     *
+     * 获得验证码
      * @param phoneCodeVerifyVO
      * @return
      */
@@ -66,7 +65,6 @@ public class PhoneController {
     @PostMapping("/verify")
     public R verifyCode(@Valid @RequestBody PhoneCodeVerifyVO phoneCodeVerifyVO) {
         if (Objects.isNull(phoneCodeVerifyVO.getCode())) return R.fail("验证码不能为空");
-        BitMapBloomFilter filter = new BitMapBloomFilter(10);
 
         Long id = UserContext.get().getId();
         if (blackListService.checkExist(id)) {

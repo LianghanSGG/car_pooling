@@ -44,12 +44,16 @@ public class MyMVCConfig implements WebMvcConfigurer {
     // 默认登录，电话号验证
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/user/login", "/druid/**", "/mock/**");
+//        临时注释掉
+//        registry.addInterceptor(loginInterceptor)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns("/user/login", "/druid/**", "/mock/**");
 
+//        registry.addInterceptor(mockInter)
+//                .addPathPatterns("/mock/**");
+//        使用模拟的登录拦截
         registry.addInterceptor(mockInter)
-                .addPathPatterns("/mock/**");
+                .addPathPatterns("/**");
 
         registry.addInterceptor(ipInterceptor)
                 .addPathPatterns("/user/login", "/druid/**");

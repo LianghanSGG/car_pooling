@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 /**
  * 订单表
  * 下个版本可以把最早出发时间和最晚出发时间改成Integer类型，有了appointmentTime可以忽略时间
- *
+ * 注意，我用了mybatisplus的@version注解，有些时候没必要自旋。
  * @author LiangHanSggg
  * @date 2023-07-16 16:18
  */

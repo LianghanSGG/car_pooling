@@ -14,8 +14,8 @@ Configuration:
         value: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %m%n"
 
       - name: FILE_PATH
-#        value: D:\weacsoft_car
-        value: /software/carpooling_jar
+        #        value: D:\weacsoft_car
+        value: ./software_log/
 
   appenders:
     #  输出控制台日志的配置
@@ -89,7 +89,8 @@ Configuration:
         #  定义该logger的输出目的地
         AppenderRef:
           - ref: Console
-      - name: "com.school.common.log.LogAspect"
+          - ref: errorfile
+      - name: "com.carpooling.common.annotation.LogAspect"
         level: info
         additivity: false
         AppenderRef:

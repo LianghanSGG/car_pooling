@@ -23,7 +23,6 @@ public class UserInfoVo {
 
     /**
      * 学号 如果是传递过来无需携带
-     *
      */
     @Null(message = "不能修改学号")
     String schoolId;
@@ -33,6 +32,12 @@ public class UserInfoVo {
      * 昵称
      */
     String nickName;
+
+    /**
+     * 真实姓名。如果是传递过来无需携带
+     */
+    @Null(message = "不能修改真实姓名")
+    String name;
 
     /**
      * 电话 如果是传递过来无需携带

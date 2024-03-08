@@ -162,19 +162,13 @@ public class BatchServiceImpl extends ServiceImpl<BatchMapper, Batch> implements
     }
 
 
-    /**
-     * 对订单列表进行收集
-     * 有的话直接走redis。没有的话去查mysql。然后异步的写入到redis中。
-     *
-     * @param orderList
-     * @return
-     */
+    @Override
     public List<OrderBriefInfoVO> orderCollect(Long[] orderList) {
         List<OrderBriefInfoVO> list = new ArrayList<>(5);
         List<Long> temp = new ArrayList<>(5);
 
         for (Long orderId : orderList) {
-            OrderBriefInfoVO orderBriefInfoVO = redisUtil.StringGet(RedisPrefix.ORDER_BRIEF_INFO + orderId, OrderBriefInfoVO.class);
+            OrderBriefInfoVO orderBriefInfoVO = (OrderBriefInfoVO) redisUtil.StringGet(RedisPrefix.ORDER_BRIEF_INFO + orderId, OrderBriefInfoVO.class);
             if (Objects.isNull(orderBriefInfoVO)) {
                 temp.add(orderId);
             } else {

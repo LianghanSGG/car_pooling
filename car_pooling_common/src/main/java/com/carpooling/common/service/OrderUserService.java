@@ -2,6 +2,7 @@ package com.carpooling.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.carpooling.common.pojo.db.OrderUser;
+import com.carpooling.common.pojo.vo.OrderDetailVO;
 
 import java.util.List;
 
@@ -11,4 +12,6 @@ import java.util.List;
  */
 public interface OrderUserService extends IService<OrderUser> {
     List<OrderUser> getHistory(int index, int size);
+
+    OrderDetailVO getHistoryDetail(Long orderId);
 }

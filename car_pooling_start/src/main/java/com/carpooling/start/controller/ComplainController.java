@@ -6,6 +6,7 @@ import com.carpooling.common.pojo.vo.ComplainVO;
 import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.ComplainService;
 import com.carpooling.common.util.RedisUtil;
+import com.carpooling.common.util.SensitiveFilterService;
 import com.carpooling.common.util.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -32,6 +35,7 @@ public class ComplainController {
 
     /**
      * 发起投诉
+     *
      * @param complainVO
      * @return
      */
@@ -55,10 +59,10 @@ public class ComplainController {
 
     /**
      * 获得投诉
-     * @apiNote 暂时只返回回复结果，等后面根据需求进行修改
      *
      * @param complainId
      * @return
+     * @apiNote 暂时只返回回复结果，等后面根据需求进行修改
      */
     @Log(module = "投诉模块", operation = "获得投诉通知")
     @GetMapping("/get")
@@ -69,6 +73,29 @@ public class ComplainController {
         } else {
             return R.success(replay);
         }
+    }
+
+    /**
+     * 检查是否存在违法词。
+     * 传过来的数据是一个对象，对象里面要有一个key是txt。值是要检查的字符串
+     * 返回一个对象。其中state =1时，代表存在违法词。0是没有。如果有违法词的话是会有keyword
+     *
+     * @param map
+     * @return
+     */
+    @PostMapping("/verfiy")
+    public R getverfiy(@RequestBody Map<String, String> map) {
+        String txt = map.get("txt");
+        SensitiveFilterService filter = SensitiveFilterService.getInstance();
+        boolean existKeyWord = filter.checkContainCount(txt);
+        Map<String, String> res = new HashMap<>();
+        if (existKeyWord) {
+            res.put("state", 1 + "");
+            res.put("keyword", filter.returnSensitiveWord(txt));
+        } else {
+            res.put("state", 0 + "");
+        }
+        return R.success(res);
     }
 
 }

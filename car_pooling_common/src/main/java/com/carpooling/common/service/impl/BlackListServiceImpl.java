@@ -32,6 +32,7 @@ public class BlackListServiceImpl extends ServiceImpl<BlackListMapper, BlackList
 
     @Override
     public boolean checkExist(Long userId) {
+
         if (redisUtil.ValueExist(RedisPrefix.BLACKLIST)) {
             return redisUtil.SetExistMember(RedisPrefix.BLACKLIST, userId);
         }

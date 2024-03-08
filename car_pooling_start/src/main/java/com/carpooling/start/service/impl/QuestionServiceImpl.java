@@ -8,7 +8,6 @@ import com.carpooling.common.util.RedisUtil;
 import com.carpooling.start.mapper.QuestionsMapper;
 import com.carpooling.start.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +26,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionsMapper, Question> 
     //后期检查的时候看看是否存在问题
     @Override
     public List<Question> getInfo() {
+
 
         List<Question> list = redisUtil.StringGet(RedisPrefix.QA, List.class);
         if (list == null || list.size() == 0) {

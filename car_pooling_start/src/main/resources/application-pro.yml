@@ -130,3 +130,12 @@ sms:
     requestUrl: sms.tencentcloudapi.com
     action: SendSms
     version: 2021-01-11
+
+tencent-cloud:
+  # 腾讯云短信配置
+  sms:
+    secretId: AKIDYsAYpvqc3a8Xl4Gh8SZR7a0KXqNl3HMJ
+    secretKey: EKJ5mKsIl297wqeTKWk3sQuW9jIvMhqt
+    sdkAppId: 1400760561
+    signName: 匿名者IT技术网
+    codeTemplateId: 2025070

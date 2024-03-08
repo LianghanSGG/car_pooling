@@ -5,7 +5,8 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 订单简略信息VO 不包含任何可变的状态
+ * 订单简略信息VO 不包含任何可变的状态。
+ * 主要用于存储在redis中
  *
  * @author LiangHanSggg
  * @date 2023-08-07 22:12

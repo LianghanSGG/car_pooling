@@ -1,10 +1,10 @@
 package com.carpooling.phone.service.impl;
 
-import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.carpooling.common.exception.DException;
 import com.carpooling.common.pojo.db.BlackList;
 import com.carpooling.common.pojo.db.User;
 import com.carpooling.common.pojo.vo.PhoneCodeVerifyVO;
@@ -12,6 +12,7 @@ import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.BlackListService;
 import com.carpooling.common.service.UserService;
 import com.carpooling.common.util.RedisUtil;
+import com.carpooling.common.util.TencentCloudUtil;
 import com.carpooling.common.util.UserContext;
 import com.carpooling.phone.mapper.PhoneVerifySuccessMapper;
 import com.carpooling.phone.pojo.PhoneVerification;
@@ -25,9 +26,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,97 +53,143 @@ public class PhoneVerifySuccessServiceImpl extends ServiceImpl<PhoneVerifySucces
     ApplicationContext applicationContext;
 
 
-    // 无需做俩次短信之间cd的检查，让前端去做，如果是故意的话自己次数也完了
+    @Autowired
+    private TencentCloudUtil tencentCloudUtil;
+
     @Override
     public String send(String phone) {
-        int state = UserContext.get().getState().intValue();
-        Long id = UserContext.get().getId();
-        // i==0意味着是正常用户
-        if (state == 0) {
-            // 正常用户进行修改，先判断上一条成功的距离现在是否有半年，如果有的话的就判断次数
-            LambdaQueryWrapper<PhoneVerification> last = Wrappers.lambdaQuery(PhoneVerification.class)
-                    .eq(PhoneVerification::getUserId, id)
-                    .eq(PhoneVerification::getVerifySuccess, 1)
-                    .orderByDesc(PhoneVerification::getCreateTime)
-                    .last("limit 1");
+        Long userId = UserContext.get().getId();
+        String key = "restricted_code" + userId + "";
 
-            PhoneVerification lastSuccess = getOne(last);
-
-            if (Objects.isNull(lastSuccess)) return "联系管理员";
-
-            Duration between = LocalDateTimeUtil.between(lastSuccess.getCreateTime(), LocalDateTime.now());
-            long days = between.toDays();
-            //接近半年
-            if (days > 180) {
-                return "距离上次修改不足180天";
-            }
-            // A是最后一次拉黑的时间，B是最后一次认证成功的时间
-            // A==null   B
-            // A!=null A/B
-            // ------》时间线
-            // A B ---C(now)
-            // B A ---C(now)
-            // A/B ---C(now) 计数
-
-            long number = 0;
-            //检查是否被拉黑
-            LocalDateTime time = beShielded(id);
-
-            if (time == null || lastSuccess.getCreateTime().isAfter(time)) {
-                //没有被拉黑过 或 B在A的后面
-                LambdaQueryWrapper<PhoneVerification> gt = Wrappers.lambdaQuery(PhoneVerification.class)
-                        .eq(PhoneVerification::getUserId, id)
-                        .gt(PhoneVerification::getCreateTime, lastSuccess.getCreateTime());
-                number = count(gt);
-            } else {
-                number = countNumberBeforeShielded(id, time);
-            }
-
-            return judgeByCount(id, phone, number);
-            // 下面是优雅小技巧
-//            return judgeByCount(id, phone, (time == null || lastSuccess.getCreateTime().isAfter(time)) ? count(Wrappers.lambdaQuery(PhoneVerification.class)
-//                    .eq(PhoneVerification::getUserId, id)
-//                    .gt(PhoneVerification::getCreateTime, lastSuccess)) : countNumberBeforeShielded(id, time));
-
+        if (redisUtil.StringGet(key, String.class) != null) {
+            throw new DException("被限制发送次数");
         }
-
-        return newUserResidueDegree(id, phone);
+        String dayNumKey = "cur_day_code_num" + userId + "";
+        Integer num = redisUtil.StringGet(dayNumKey, Integer.class);
+        if (num != null && num >= 4) {
+            redisUtil.StringAdd(key, "RESTRICTED", 24L, TimeUnit.HOURS);
+            throw new DException("今日次数已达上线");
+        }
+        // 生成六位验证码
+        StringBuffer code = new StringBuffer();
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            int r = random.nextInt(10);
+            code.append(r);
+        }
+        String phoneCodeKey = "userphonecode:" + userId + ":" + phone;
+        redisUtil.StringAdd(phoneCodeKey, code.toString(), 900L, TimeUnit.SECONDS);
+        tencentCloudUtil.sendPhoneCode(phone, code.toString());
+        if (num == null) {
+            // 当天剩余时间
+            LocalDateTime midnight = LocalDateTime.now().plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+            long seconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), midnight);
+            redisUtil.StringAdd(dayNumKey, 1, seconds, TimeUnit.SECONDS);
+        } else {
+            redisUtil.StringIncrement(dayNumKey, 1L);
+        }
+        return "成功发送";
     }
 
+
+    // 无需做俩次短信之间cd的检查，让前端去做，如果是故意的话自己次数也完了
+//    ====================================================下面是旧版的
+//    @Override
+//    public String send(String phone) {
+//        int state = UserContext.get().getState().intValue();
+//        Long id = UserContext.get().getId();
+//        // i==0意味着是正常用户
+//        if (state == 0) {
+//            // 正常用户进行修改，先判断上一条成功的距离现在是否有半年，如果有的话的就判断次数
+//            LambdaQueryWrapper<PhoneVerification> last = Wrappers.lambdaQuery(PhoneVerification.class)
+//                    .eq(PhoneVerification::getUserId, id)
+//                    .eq(PhoneVerification::getVerifySuccess, 1)
+//                    .orderByDesc(PhoneVerification::getCreateTime)
+//                    .last("limit 1");
+//
+//            PhoneVerification lastSuccess = getOne(last);
+//
+//            if (Objects.isNull(lastSuccess)) return "联系管理员";
+//
+//            Duration between = LocalDateTimeUtil.between(lastSuccess.getCreateTime(), LocalDateTime.now());
+//            long days = between.toDays();
+//            //接近半年
+//            if (days > 180) {
+//                return "距离上次修改不足180天";
+//            }
+//            // A是最后一次拉黑的时间，B是最后一次认证成功的时间
+//            // A==null   B
+//            // A!=null A/B
+//            // ------》时间线
+//            // A B ---C(now)
+//            // B A ---C(now)
+//            // A/B ---C(now) 计数
+//
+//            long number = 0;
+//            //检查是否被拉黑
+//            LocalDateTime time = beShielded(id);
+//
+//            if (time == null || lastSuccess.getCreateTime().isAfter(time)) {
+//                //没有被拉黑过 或 B在A的后面
+//                LambdaQueryWrapper<PhoneVerification> gt = Wrappers.lambdaQuery(PhoneVerification.class)
+//                        .eq(PhoneVerification::getUserId, id)
+//                        .gt(PhoneVerification::getCreateTime, lastSuccess.getCreateTime());
+//                number = count(gt);
+//            } else {
+//                number = countNumberBeforeShielded(id, time);
+//            }
+//
+//            return judgeByCount(id, phone, number);
+//            // 下面是优雅小技巧
+////            return judgeByCount(id, phone, (time == null || lastSuccess.getCreateTime().isAfter(time)) ? count(Wrappers.lambdaQuery(PhoneVerification.class)
+////                    .eq(PhoneVerification::getUserId, id)
+////                    .gt(PhoneVerification::getCreateTime, lastSuccess)) : countNumberBeforeShielded(id, time));
+//
+//        }
+//
+//        return newUserResidueDegree(id, phone);
+//    }
+//
     @Override
     public String verify(PhoneCodeVerifyVO phoneCodeVerifyVO) {
         Long userId = UserContext.get().getId();
 
-        String codeString = redisUtil.StringGet(RedisPrefix.PHONE_VERIFY_CODE + userId, String.class);
-        if (Objects.isNull(codeString)) return "验证码已经过期";
+        String phoneCodeKey = "userphonecode:" + userId + ":" + phoneCodeVerifyVO.getPhone();
+        String codeString = redisUtil.StringGet(phoneCodeKey, String.class);
 
-        if (!codeString.equals(phoneCodeVerifyVO.getCode())) return "验证码错误";
+        if (Objects.isNull(codeString)) {
+            throw new DException("验证码已过期");
+        }
 
-        LambdaQueryWrapper<PhoneVerification> last = Wrappers.lambdaQuery(PhoneVerification.class)
-                .eq(PhoneVerification::getUserId, userId)
-                .orderByDesc(PhoneVerification::getCreateTime)
-                .last("limit 1");
+        if (!codeString.equals(phoneCodeVerifyVO.getCode())) throw new DException("验证码错误");
 
-        PhoneVerification one = getOne(last);
+//        LambdaQueryWrapper<PhoneVerification> last = Wrappers.lambdaQuery(PhoneVerification.class)
+//                .eq(PhoneVerification::getUserId, userId)
+//                .orderByDesc(PhoneVerification::getCreateTime)
+//                .last("limit 1");
 
-        if (Objects.isNull(one)) return "联系管理员";
+//        PhoneVerification one = getOne(last);
 
-        if (!one.getUserPhone().equals(phoneCodeVerifyVO.getPhone())) return "号码和验证号不一致";
+//        if (Objects.isNull(one)) throw new DException("请联系管理员");
 
+//        if (!one.getUserPhone().equals(phoneCodeVerifyVO.getPhone())) throw new DException("号码与验证码不一致");
 
-        return applicationContext.getBean(this.getClass()).successVerify(one, phoneCodeVerifyVO.getPhone()) ? "验证成功" : "验证失败";
-    }
-
-    @Transactional(rollbackFor = RuntimeException.class)
-    public boolean successVerify(PhoneVerification one, String phone) {
-        one.setVerifySuccess(1);
-        boolean b = updateById(one);
         LambdaUpdateWrapper<User> set = Wrappers.lambdaUpdate(User.class)
                 .eq(User::getId, UserContext.get().getId())
-                .set(User::getPhone, phone);
-        boolean update = userService.update(set);
-        return b && update;
+                .set(User::getPhone, phoneCodeVerifyVO.getPhone());
+        return userService.update(set) ? "验证成功" : "验证失败";
     }
+
+//    @Transactional(rollbackFor = RuntimeException.class)
+//    public boolean successVerify(PhoneVerification one, String phone) {
+//        one.setVerifySuccess(1);
+//        boolean b = updateById(one);
+//        LambdaUpdateWrapper<User> set = Wrappers.lambdaUpdate(User.class)
+//                .eq(User::getId, UserContext.get().getId())
+//                .set(User::getPhone, phone);
+//        boolean update = userService.update(set);
+//        return b && update;
+//    }
 
 
     /**
@@ -295,5 +343,4 @@ public class PhoneVerifySuccessServiceImpl extends ServiceImpl<PhoneVerifySucces
         }
         return "发送失败";
     }
-
 }

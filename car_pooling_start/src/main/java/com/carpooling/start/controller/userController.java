@@ -6,7 +6,6 @@ import com.carpooling.common.exception.DException;
 import com.carpooling.common.pojo.R;
 import com.carpooling.common.pojo.vo.LoginVo;
 import com.carpooling.common.pojo.vo.UserInfoVo;
-import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.UserService;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.UserContext;
@@ -77,10 +76,10 @@ public class userController {
     @PostMapping("/info/update")
     public R updateInfo(@RequestBody @Valid UserInfoVo userInfoVo) {
         Long id = UserContext.get().getId();
-        String s = redisUtil.StringGet(RedisPrefix.USERINFO_TIME + id, String.class);
-        if (!StrUtil.isEmptyIfStr(s)) {
-            return R.fail("距离上次修改不足15天");
-        }
+//        String s = redisUtil.StringGet(RedisPrefix.USERINFO_TIME + id, String.class);
+//        if (!StrUtil.isEmptyIfStr(s)) {
+//            return R.fail("距离上次修改不足15天");
+//        }
         if (userService.updateInfo(id, userInfoVo)) {
             return R.success();
         } else {

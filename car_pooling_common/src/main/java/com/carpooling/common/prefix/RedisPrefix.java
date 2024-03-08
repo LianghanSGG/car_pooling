@@ -37,4 +37,6 @@ public class RedisPrefix {
     public static final String ORDER_BRIEF_INFO = "order:brief:info:";
     // 自动加入每天的次数限制
     public static final String ORDER_AUTO_JOIN_LIMIT = "user:order:auto:join:";
+    // 批次的延时队列
+    public static final String BATCH_DELAY_QUEUE = "batch:delay";
 }

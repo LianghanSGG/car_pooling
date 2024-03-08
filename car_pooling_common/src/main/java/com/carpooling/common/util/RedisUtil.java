@@ -117,6 +117,53 @@ public class RedisUtil {
         redisTemplate.opsForSet().remove(key, value);
     }
 
+
+    /**
+     * 检查是否存在对应的ZSet
+     *
+     * @param key ZSet KEY
+     * @return
+     */
+    public boolean ZSetExist(String key) {
+        return redisTemplate.hasKey(key);
+    }
+
+    /**
+     * 加入到ZSet队列
+     *
+     * @param key
+     * @param value
+     * @param score
+     * @return
+     */
+    public boolean ZSetAdd(String key, Long value, double score) {
+        return redisTemplate.opsForZSet().add(key, value, score);
+    }
+
+
+    /**
+     * 通过分数获得ZSet中的ID
+     *
+     * @param key
+     * @param min
+     * @param max
+     * @return
+//     */
+//    public Set<T> ZSetGetByScore(String key, double min, double max, T t) {
+//        return (Set<T>) redisTemplate.opsForZSet().rangeByScoreWithScores(key, min, max);
+//    }
+
+    /**
+     * 指定Value删除对应在ZSet中的记录
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    public Long ZSetDeleted(String key, Object... value) {
+        return redisTemplate.opsForZSet().remove(key, value);
+    }
+
     /**
      * 使用异步进行删除，不会抛出异常
      *

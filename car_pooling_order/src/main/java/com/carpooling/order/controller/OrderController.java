@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,6 +54,20 @@ public class OrderController {
     public R<List<OrderUser>> getHistory(@RequestParam("index") @Min(1) @Max(50) int index,
                                          @RequestParam("page") @Min(1) @Max(10) int page) {
         return R.success(orderUserService.getHistory(index, page));
+
+    }
+
+    /**
+     * 获得历史订单的详情内容
+     *
+     * @param orderId
+     * @return
+     * @apiNote 不知道需要什么，暂时发送这些，后期根据需要更改字段
+     */
+    @Log(module = "订单模块", operation = "获得具体历史订单的详情")
+    @GetMapping("/history/detail")
+    public R<OrderDetailVO> getHistory(@RequestParam Long orderId) {
+        return R.success(orderUserService.getHistoryDetail(orderId));
 
     }
 
@@ -156,4 +171,93 @@ public class OrderController {
     public R<List<OrderInfoVO>> getRecommendedList(@Valid @RequestBody RecommendVO recommendVO) {
         return R.success(orderService.getRecommended(recommendVO));
     }
+
+
+    /**
+     * 获得自己创建订单的详情
+     *
+     * @return
+     * @apiNote 如果没有data就是自己没有创建订单，
+     */
+    @Log(module = "订单模块", operation = "获得自建单详情")
+    @GetMapping("/detail/self")
+    public R<List<OrderDetailVO>> getOrderDetail() {
+        return R.success(orderService.getOrderDetail());
+    }
+
+
+    /**
+     * 获得自己已经加入的订单列表
+     *
+     * @return
+     */
+    @Log(module = "订单模块", operation = "获得已加入的订单列表")
+    @GetMapping("/list")
+    public R<List<OrderBriefInfoVO>> getSelfList() {
+        return R.success(orderService.getSelf());
+    }
+
+
+    /**
+     * 获得加入订单的详情
+     *
+     * @param orderId 传String过来，不要传Long类型
+     * @return
+     */
+    @Log(module = "订单模块", operation = "获得加入订单的详情")
+    @GetMapping("/detail")
+    public R<OrderDetailVO> getJoinOrderDetail(@NotNull(message = "订单id不能为空")
+                                               @RequestParam("orderId") Long orderId) {
+        return R.success(orderService.JoinOrderDetail(orderId));
+    }
+
+
+    /**
+     * 用户取消自己加入的单子
+     *
+     * @return
+     * @apiNote 非团长取消自己的单子.
+     * 如果返回`您拥有此订单`，那么意味着有可能在用户取消之前团长把单子移给他。 这是一个比较极限的情况。那就应该调用团长解散的接口
+     */
+    @Log(module = "订单模块", operation = "取消订单")
+    @GetMapping("/cancel")
+    public R cancelOrder(@NotNull(message = "订单id不能为空")
+                         @RequestParam("orderId") Long orderId) {
+        if (orderService.cancelOrder(orderId)) {
+            return R.success("退出成功");
+        } else {
+            return R.fail("退出失败");
+        }
+    }
+
+    /**
+     * 团长取消自己创建的的单子
+     *
+     * @param orderId
+     * @return
+     * @apiNote 会通知订单内的人已经被取。团长会被扣分。需要在取消时提醒一下会扣分
+     */
+    @Log(module = "订单模块", operation = "取消自建单")
+    @GetMapping("/cancel/leader")
+    public R leaderCancelOrder(@NotNull(message = "订单id不能为空")
+                               @RequestParam("orderId") Long orderId) {
+        return R.success(orderService.leaderCancelOrder(orderId));
+    }
+
+
+    /**
+     * 团长结束订单
+     *
+     * @param orderId
+     * @return
+     * @apiNote 在结束之前应该检查一下人数是否达到目标。让他选择是否要强制结束
+     */
+    @Log(module = "订单模块", operation = "完成订单")
+    @GetMapping("/complete/leader")
+    public R leaderCompleteOrder(@NotNull(message = "订单id不能为空")
+                                 @RequestParam("orderId") Long orderId) {
+        return R.success();
+    }
+
+
 }

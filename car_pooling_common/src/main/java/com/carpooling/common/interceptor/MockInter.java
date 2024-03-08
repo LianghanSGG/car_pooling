@@ -34,11 +34,17 @@ public class MockInter extends HandlerInterceptorAdapter {
 //        UserContext.set(userVO);
 
         UserVO userVO = new UserVO();
-        userVO.setId(1681962715833606148L);
+        userVO.setId(1691353490296762370L);
         userVO.setState(0);
         userVO.setClientIP(hp.getClientIP(request));
         userVO.setOpenid("MOCK_OPENID");
         UserContext.set(userVO);
         return true;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        UserContext.remove();
+        return;
     }
 }

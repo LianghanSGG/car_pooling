@@ -32,7 +32,7 @@ public interface OrderService extends IService<Order> {
      * 获得上传的token，解决重复提交问题
      * <p>
      * 我的实现方案：key是前缀加id。v 是uuid。这样就可以不用做次数校验。
-     * 第二版可以做一下请求限制，不然如果一直以添加的形式加入到redis会被打爆。
+     * 第二版可以做一下请求限制
      *
      * @return token
      */
@@ -66,4 +66,54 @@ public interface OrderService extends IService<Order> {
      * @return
      */
     List<OrderInfoVO> getRecommended(RecommendVO recommendVO);
+
+    /**
+     * 获得订单详情
+     *
+     * @return
+     */
+    List<OrderDetailVO> getOrderDetail();
+
+    /**
+     * 获得自己成功加入的订单
+     *
+     * @return
+     */
+    List<OrderBriefInfoVO> getSelf();
+
+    /**
+     * 获得加入订单的详情。只能看到自己和团长的信息，其他的都是脱敏
+     * <p>
+     * 可以和获得订单详情合并成一个方法
+     *
+     * @return
+     */
+    OrderDetailVO JoinOrderDetail(Long orderId);
+
+
+    /**
+     * 用户取消自己加入的单子
+     *
+     * @param orderId
+     * @return
+     */
+    boolean cancelOrder(Long orderId);
+
+
+    /**
+     * 取消自建单
+     * 直接解散。异步通知群友
+     *
+     * @param orderId
+     * @return
+     */
+    boolean leaderCancelOrder(Long orderId);
+
+    /**
+     * 团长完成订单
+     *
+     * @param orderId
+     * @return
+     */
+    boolean leaderCompleteOrder(Long orderId);
 }

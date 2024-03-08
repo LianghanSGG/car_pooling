@@ -1,6 +1,8 @@
 package com.carpooling.common.service;
 
 /**
+ * 可以将这个做成模板方法+策略模式。
+ *
  * @author LiangHanSggg
  * @date 2023-08-11 17:02
  */
