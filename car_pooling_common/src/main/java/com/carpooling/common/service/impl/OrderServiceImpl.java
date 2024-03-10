@@ -589,6 +589,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             idList.add(orderUser.getUserId());
         });
 
+
         if (!orderUserService.updateBatchById(orderUserList)) {
             return false;
         }
@@ -599,7 +600,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             LambdaUpdateWrapper<User> userLambdaUpdateWrapper = Wrappers.lambdaUpdate(User.class)
                     .eq(User::getId, uId)
                     .setSql("successes_number = successes_number + 1")
-                    .setSql("total_number = total_umber +1");
+                    .setSql("total_number = total_number +1");
             userService.update(userLambdaUpdateWrapper);
         }
 

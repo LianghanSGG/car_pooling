@@ -23,4 +23,9 @@ public class UserSimpleInfoVO {
      * 学号
      */
     String schoolId;
+
+    /**
+     * 订单批次对应表的id
+     */
+    String orderBatchId;
 }

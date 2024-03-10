@@ -39,7 +39,7 @@ public class PhoneController {
     /**
      * 发送验证码,有效期15分钟
      *
-     * @param
+     * @param phone 电话号码
      * @return
      */
     @Log(module = "电话验证模块", operation = "发送验证码")

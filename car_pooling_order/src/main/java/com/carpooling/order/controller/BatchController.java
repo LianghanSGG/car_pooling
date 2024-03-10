@@ -76,4 +76,36 @@ public class BatchController {
     public R<List<UserSimpleInfoVO>> getUserRequest() {
         return R.success(batchService.listRequest());
     }
+
+    /**
+     * 通过用户的申请请求
+     *
+     * @param orderBatchId
+     * @return
+     */
+    @Log(module = "批次模块", operation = "允许用户加入订单")
+    @GetMapping("/batch/pass")
+    public R passCheck(@RequestParam Long orderBatchId) {
+        if (batchService.passReq(orderBatchId)) {
+            return R.success("通过");
+        } else {
+            return R.fail("失败");
+        }
+    }
+
+    /**
+     * 拒绝用户的申请请求
+     *
+     * @param orderBatchId
+     * @return
+     */
+    @Log(module = "批次模块", operation = "拒绝用户加入订单")
+    @GetMapping("/batch/refuse")
+    public R refuseCheck(@RequestParam Long orderBatchId) {
+        if (batchService.refuseReq(orderBatchId)) {
+            return R.success("通过");
+        } else {
+            return R.fail("失败");
+        }
+    }
 }

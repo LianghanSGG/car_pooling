@@ -45,4 +45,18 @@ public interface BatchService extends IService<Batch> {
      * 检查是否有乘客申请
      */
     List<UserSimpleInfoVO> listRequest();
+
+    /**
+     * 允许用户通过
+     * @param orderBatchId
+     * @return
+     */
+    boolean passReq(Long orderBatchId);
+
+    /**
+     * 拒绝用户的请求
+     * @param orderBatchId
+     * @return
+     */
+    boolean refuseReq(Long orderBatchId);
 }

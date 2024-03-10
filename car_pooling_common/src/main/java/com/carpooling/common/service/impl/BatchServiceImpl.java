@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -62,6 +63,9 @@ public class BatchServiceImpl extends ServiceImpl<BatchMapper, Batch> implements
 
     @Autowired
     CommonService commonService;
+
+    @Autowired
+    BatchService batchService;
 
 
     @Override
@@ -247,6 +251,7 @@ public class BatchServiceImpl extends ServiceImpl<BatchMapper, Batch> implements
 
                 userSimpleInfoVO.setUserName(name);
                 userSimpleInfoVO.setSchoolId(schoolId);
+                userSimpleInfoVO.setOrderBatchId(String.valueOf(wantJoinUser.getId()));
 
                 res.add(userSimpleInfoVO);
             }
@@ -254,6 +259,78 @@ public class BatchServiceImpl extends ServiceImpl<BatchMapper, Batch> implements
 
 
         return res;
+    }
+
+    @Override
+    public boolean passReq(Long orderBatchId) {
+//        order-batch修改。order_user新加一条记录。order进行修改。
+
+        LambdaQueryWrapper<OrderBatch> eq = Wrappers.lambdaQuery(OrderBatch.class)
+                .eq(OrderBatch::getId, orderBatchId);
+
+        OrderBatch orderBatch = orderBatchService.getOne(eq);
+        if (orderBatch == null) {
+            return false;
+        }
+
+        orderBatch.setState(1);
+
+        if (!orderBatchService.updateById(orderBatch)) {
+            return false;
+        }
+
+        LambdaQueryWrapper<User> eq1 = Wrappers.lambdaQuery(User.class)
+                .eq(User::getId, orderBatch.getOwnerId());
+
+        User user = userService.getOne(eq1);
+
+        LambdaQueryWrapper<Batch> eq2 = Wrappers.lambdaQuery(Batch.class)
+                .eq(Batch::getId, orderBatch.getBatchId());
+
+        Batch batch = batchService.getOne(eq2);
+
+        OrderUser orderUser = new OrderUser()
+                .setOrderId(orderBatch.getOrderId())
+                .setUserId(orderBatch.getOwnerId())
+                .setUserName(user.getName())
+                .setUserSex(batch.getSex())
+                .setPersonNumber(batch.getPersonNumber())
+                .setUserPhone(user.getPhone())
+                .setUserWechatAccount(user.getAccount())
+                .setUserOpenid(user.getOpenid())
+                .setUserRole(1)
+                .setStartPlace(batch.getStartPlace())
+                .setEndPlace(batch.getEndPlace())
+                .setAppointmentTime(batch.getLatestTime().toLocalDate());
+
+        String sql = "total_number = total_number + " + batch.getPersonNumber();
+        LambdaUpdateWrapper<Order> orderLambdaUpdateWrapper = Wrappers.lambdaUpdate(Order.class)
+                .eq(Order::getId, orderBatch.getOrderId())
+                .setSql(sql);
+
+        return orderUserService.save(orderUser) && orderService.update(orderLambdaUpdateWrapper);
+    }
+
+    @Override
+    public boolean refuseReq(Long orderBatchId) {
+//        order-batch修改。顺带检查该批次的全部是否被拒绝了。
+        LambdaQueryWrapper<OrderBatch> eq = Wrappers.lambdaQuery(OrderBatch.class)
+                .eq(OrderBatch::getId, orderBatchId);
+
+        OrderBatch orderBatch = orderBatchService.getOne(eq);
+        if (orderBatch == null) {
+            return false;
+        }
+
+        orderBatch.setState(2);
+
+        if (!orderBatchService.updateById(orderBatch)) {
+            return false;
+        }
+//        算了。。。检查了也没啥意思。反正不展示。
+
+
+        return true;
     }
 
 
@@ -426,6 +503,4 @@ public class BatchServiceImpl extends ServiceImpl<BatchMapper, Batch> implements
         batchDTO.setBatch(batch);
         return batchDTO;
     }
-
-
 }
