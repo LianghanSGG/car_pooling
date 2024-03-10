@@ -15,6 +15,7 @@ import com.carpooling.common.pojo.db.*;
 import com.carpooling.common.pojo.vo.BatchVO;
 import com.carpooling.common.pojo.vo.OrderBriefInfoVO;
 import com.carpooling.common.pojo.vo.ShoppingCarVo;
+import com.carpooling.common.pojo.vo.UserSimpleInfoVO;
 import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.*;
 import com.carpooling.common.util.RedisUtil;
@@ -52,6 +53,9 @@ public class BatchServiceImpl extends ServiceImpl<BatchMapper, Batch> implements
 
     @Autowired
     OrderBatchService orderBatchService;
+
+    @Autowired
+    OrderUserService orderUserService;
 
     @Autowired
     ApplicationContext applicationContext;
@@ -199,6 +203,57 @@ public class BatchServiceImpl extends ServiceImpl<BatchMapper, Batch> implements
         });
 
         return list;
+    }
+
+    @Override
+    public List<UserSimpleInfoVO> listRequest() {
+        /**
+         * --思路，先获得自己拥有的订单。如果没有直接返回空
+         * 							如果有的话，拿着这个订单号去orderBatch_搜，状态味0的。然后拿到用户的id，去搜基础资料。实现回传基础资料。
+         */
+        Long userId = UserContext.get().getId();
+
+        LambdaQueryWrapper<OrderUser> eq = Wrappers.lambdaQuery(OrderUser.class)
+                .eq(OrderUser::getUserRole, 0)
+                .eq(OrderUser::getState, 0)
+                .eq(OrderUser::getUserId, userId);
+
+        List<OrderUser> orderList = orderUserService.list(eq);
+        if (orderList == null || orderList.size() == 0) return null;
+
+        List<UserSimpleInfoVO> res = new LinkedList<>();
+        // 拿到订单id去遍历去搜 orderBatch
+        for (OrderUser orderUser : orderList) {
+            Long orderId = orderUser.getOrderId();
+
+            LambdaQueryWrapper<OrderBatch> eq1 = Wrappers.lambdaQuery(OrderBatch.class)
+                    .eq(OrderBatch::getOrderId, orderId)
+                    .eq(OrderBatch::getState, 0)
+                    .ne(OrderBatch::getOwnerId, userId);
+
+            List<OrderBatch> userIdList = orderBatchService.list(eq1);
+
+            for (OrderBatch wantJoinUser : userIdList) {
+                Long ownerId = wantJoinUser.getOwnerId();
+
+                LambdaQueryWrapper<User> eq2 = Wrappers.lambdaQuery(User.class).eq(User::getId, ownerId);
+
+                User user = userService.getOne(eq2);
+
+                UserSimpleInfoVO userSimpleInfoVO = new UserSimpleInfoVO();
+
+                String name = user.getName().substring(0, 1) + "同学";
+                String schoolId = user.getSchoolId().substring(0, 4) + "********";
+
+                userSimpleInfoVO.setUserName(name);
+                userSimpleInfoVO.setSchoolId(schoolId);
+
+                res.add(userSimpleInfoVO);
+            }
+        }
+
+
+        return res;
     }
 
 

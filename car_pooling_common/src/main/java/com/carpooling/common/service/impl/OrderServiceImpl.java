@@ -54,6 +54,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     BatchService batchService;
 
     @Autowired
+    OrderBatchService orderBatchService;
+
+    @Autowired
     OrderUserService orderUserService;
 
     @Autowired
@@ -212,12 +215,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             throw new RuntimeException("非自动加入不应该请求这个接口");
         }
 
-        if (targetOrder.getLatestTime().isBefore(LocalDateTime.now())) {
-            throw new OrderVerifyException("已经超过最晚发车时间");
-        }
-        if (LocalDateTimeUtil.between(targetOrder.getLatestTime(), LocalDateTime.now()).toMinutes() <= 3) {
-            throw new OrderVerifyException("距离最晚时间过短不得加入");
-        }
+//        if (targetOrder.getLatestTime().isBefore(LocalDateTime.now())) {
+//            throw new OrderVerifyException("已经超过最晚发车时间");
+//        }
+//        if (LocalDateTimeUtil.between(targetOrder.getLatestTime(), LocalDateTime.now()).toMinutes() <= 3) {
+//            throw new OrderVerifyException("距离最晚时间过短不得加入");
+//        }
 
 
         {
@@ -540,6 +543,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public boolean leaderCompleteOrder(Long orderId) {
 
+        // 首先要分是自动加入还是非自动加入。
+        /**
+         * 自动加入。
+         *  将单状态修改。
+         *  修改成员的属性。增加次数。
+         *  修改成员对应order-user表的状态。
+         *
+         * 非自动加入。
+         *  将单状态修改。
+         *  修改成员的属性。增加次数。
+         *  修改成员对应order-user表的状态。
+         *  修改直接修改OderBatch
+         */
+
+//               将单状态修改。
         Long id = UserContext.get().getId();
 
         LambdaQueryWrapper<Order> eq = Wrappers.lambdaQuery(Order.class)
@@ -557,15 +575,119 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         if (!update(set)) return false;
 
-        LambdaUpdateWrapper<User> userLambdaUpdateWrapper = Wrappers.lambdaUpdate(User.class)
-                .eq(User::getId, id)
-                .setSql("successes_number = successes_number + 1")
-                .setSql("total_number = total_umber +1");
+//        找到订单内的全部成员，修改orderUser的状态
+        LambdaQueryWrapper<OrderUser> orderUserLambdaQueryWrapper = Wrappers.lambdaQuery(OrderUser.class)
+                .eq(OrderUser::getOrderId, orderId)
+                .eq(OrderUser::getState, 0);
 
-        userService.update(userLambdaUpdateWrapper);
+        List<OrderUser> orderUserList = orderUserService.list(orderUserLambdaQueryWrapper);
 
+//        获得这些成员的idlist。
+        List<Long> idList = new LinkedList<>();
+        orderUserList.forEach(orderUser -> {
+            orderUser.setState(1);
+            idList.add(orderUser.getUserId());
+        });
+
+        if (!orderUserService.updateBatchById(orderUserList)) {
+            return false;
+        }
+
+
+//       修改成员的属性。增加次数。
+        for (Long uId : idList) {
+            LambdaUpdateWrapper<User> userLambdaUpdateWrapper = Wrappers.lambdaUpdate(User.class)
+                    .eq(User::getId, uId)
+                    .setSql("successes_number = successes_number + 1")
+                    .setSql("total_number = total_umber +1");
+            userService.update(userLambdaUpdateWrapper);
+        }
+
+//        如果是自动加入的直接结束订单。
+        if (one.getAutoJoin().intValue() == 1) return true;
+
+//        需要修改orderBatch和batch
+//        得从ob找batch
+
+        //        每个用户都得执行这样的操作，所以是在for循环里面
+        for (Long uId : idList) {
+            LambdaQueryWrapper<OrderBatch> eq1 = Wrappers.lambdaQuery(OrderBatch.class)
+                    .eq(OrderBatch::getBatchId, orderId)
+                    .eq(OrderBatch::getOwnerId, uId);
+            OrderBatch one1 = orderBatchService.getOne(eq1);
+            Long batchId = one1.getBatchId();
+            LambdaQueryWrapper<Batch> eq2 = Wrappers.lambdaQuery(Batch.class)
+                    .eq(Batch::getId, batchId);
+
+            Batch one2 = batchService.getOne(eq2);
+            one2.setState(1);
+            batchService.updateById(one2);
+        }
 
         return true;
+    }
+
+    @Override
+    public boolean leadRemoveUser(Long orderId, Long userID) {
+        // 先判断该订单的类型，是自动加入还是非自动加入
+        LambdaQueryWrapper<Order> select = Wrappers.lambdaQuery(Order.class)
+                .eq(Order::getId, orderId);
+
+        Order one = getOne(select);
+        if (one == null) return false;
+
+//        if (one.getAutoJoin().intValue() == 1) {
+        // 自动加入
+
+        // 现在先要获得批次的人数。
+        LambdaQueryWrapper<OrderUser> eq = Wrappers.lambdaQuery(OrderUser.class)
+                .eq(OrderUser::getOrderId, orderId)
+                .eq(OrderUser::getUserId, userID);
+        OrderUser one1 = orderUserService.getOne(eq);
+        // 获得批次的人数
+        Integer personNumber = one1.getPersonNumber();
+//            修改这个orderuser的状态
+        one1.setState(3);
+        // 修改订单
+        one.setAlreadyNumber(one.getAlreadyNumber() - personNumber);
+
+//            同时更新成功才算是成功
+        return updateById(one) && orderUserService.updateById(one1);
+//        暂时是无需去处理orderBatch的内容。
+//        } else {
+//            // 非自动加入
+//
+//            // 现在先要获得批次的人数。
+//            LambdaQueryWrapper<OrderUser> eq = Wrappers.lambdaQuery(OrderUser.class)
+//                    .eq(OrderUser::getOrderId, orderId)
+//                    .eq(OrderUser::getUserId, userID);
+//            OrderUser one1 = orderUserService.getOne(eq);
+//            // 获得批次的人数
+//            Integer personNumber = one1.getPersonNumber();
+////            修改这个orderuser的状态
+//            one1.setState(3);
+//            // 修改订单
+//            one.setAlreadyNumber(one.getAlreadyNumber() - personNumber);
+//
+////            同时更新成功才算是成功
+//            boolean b = updateById(one);
+//            boolean b1 = orderUserService.updateById(one1);
+//            if (!b || !b1) return false;
+//
+////            先找到对应的order_batch记录
+//            LambdaQueryWrapper<OrderBatch> eq1 = Wrappers.lambdaQuery(OrderBatch.class)
+//                    .eq(OrderBatch::getOrderId, orderId)
+//                    .eq(OrderBatch::getOwnerId, userID);
+//
+//            OrderBatch one2 = orderBatchService.getOne(eq1);
+//            if (one2 == null) return false;
+//
+//
+//
+//        }
+
+
+//        return false;
     }
 
     /**

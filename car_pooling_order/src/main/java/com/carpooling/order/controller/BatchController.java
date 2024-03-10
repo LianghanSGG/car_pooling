@@ -5,6 +5,7 @@ import com.carpooling.common.annotation.PreCheck;
 import com.carpooling.common.pojo.R;
 import com.carpooling.common.pojo.vo.BatchVO;
 import com.carpooling.common.pojo.vo.ShoppingCarVo;
+import com.carpooling.common.pojo.vo.UserSimpleInfoVO;
 import com.carpooling.common.service.BlackListService;
 import com.carpooling.common.service.impl.BatchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +51,6 @@ public class BatchController {
         }
     }
 
-
-    // TODO: 2023/8/12 功能测试没有问题，还差逻辑测试 
-
     /**
      * 创建拼车记录
      *
@@ -68,4 +66,14 @@ public class BatchController {
         return R.success(batchService.createBatch(shoppingCarVo));
     }
 
+    /**
+     * 检查是否有乘客申请
+     *
+     * @return
+     */
+    @Log(module = "批次模块", operation = "检查是否有乘客申请")
+    @GetMapping("/batch/list")
+    public R<List<UserSimpleInfoVO>> getUserRequest() {
+        return R.success(batchService.listRequest());
+    }
 }

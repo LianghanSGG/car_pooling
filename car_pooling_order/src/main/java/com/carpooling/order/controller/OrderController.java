@@ -255,7 +255,29 @@ public class OrderController {
     @GetMapping("/complete/leader")
     public R leaderCompleteOrder(@NotNull(message = "订单id不能为空")
                                  @RequestParam("orderId") Long orderId) {
-        return R.success();
+
+        if (orderService.leaderCompleteOrder(orderId)) {
+            return R.success("订单完成");
+        } else {
+            return R.fail("出现异常");
+        }
+    }
+
+    /**
+     * 团长移除乘客
+     *
+     * @param orderId
+     * @param userId
+     * @return
+     */
+    @Log(module = "订单模块", operation = "团长移除用户")
+    @GetMapping("/remove/leader")
+    public R leaderRemoveUser(@RequestParam Long orderId, @RequestParam Long userId) {
+        if (orderService.leadRemoveUser(orderId, userId)) {
+            return R.success("移除成功");
+        } else {
+            return R.fail("移除失败");
+        }
     }
 
 

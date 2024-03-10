@@ -5,6 +5,7 @@ import com.carpooling.common.pojo.db.Batch;
 import com.carpooling.common.pojo.vo.BatchVO;
 import com.carpooling.common.pojo.vo.OrderBriefInfoVO;
 import com.carpooling.common.pojo.vo.ShoppingCarVo;
+import com.carpooling.common.pojo.vo.UserSimpleInfoVO;
 
 import java.util.List;
 
@@ -40,4 +41,8 @@ public interface BatchService extends IService<Batch> {
      */
     List<OrderBriefInfoVO> orderCollect(Long[] orderList);
 
+    /**
+     * 检查是否有乘客申请
+     */
+    List<UserSimpleInfoVO> listRequest();
 }

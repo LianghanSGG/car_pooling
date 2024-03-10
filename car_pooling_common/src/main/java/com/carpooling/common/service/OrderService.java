@@ -19,7 +19,7 @@ public interface OrderService extends IService<Order> {
      *
      * @return
      */
-    Map<String,Object> orderList(int index, int size);
+    Map<String, Object> orderList(int index, int size);
 
     /**
      * 有筛选条件的获得首页订单列表
@@ -27,7 +27,7 @@ public interface OrderService extends IService<Order> {
      * @param condition
      * @return
      */
-    Map<String,Object> conditionOrder(OderListConditionVO condition);
+    Map<String, Object> conditionOrder(OderListConditionVO condition);
 
     /**
      * 获得上传的token，解决重复提交问题
@@ -117,4 +117,13 @@ public interface OrderService extends IService<Order> {
      * @return
      */
     boolean leaderCompleteOrder(Long orderId);
+
+    /**
+     * 团长移除乘客
+     *
+     * @param orderId
+     * @param userID
+     * @return
+     */
+    boolean leadRemoveUser(Long orderId, Long userID);
 }
