@@ -182,7 +182,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             throw new OrderVerifyException("订单创建失败，稍后重试或联系管理员");
         }
 
-        commonService.afterPlaceOrder(qualification, RedisPrefix.ORDER_LIMIT + userId, 2, 24);
+        commonService.afterPlaceOrder(qualification, RedisPrefix.ORDER_LIMIT + userId, 200, 24);
 
         return flag ? "创建拼单成功，存在可能冲突的批次" : "创建拼单成功";
     }
