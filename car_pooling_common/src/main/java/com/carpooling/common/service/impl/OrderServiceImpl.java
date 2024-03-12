@@ -125,12 +125,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (uInfo.getReliabilityRating() < 80) throw new OrderVerifyException("信誉分过低");
 
 
-        LambdaQueryWrapper<Order> eq = Wrappers.lambdaQuery(Order.class)
-                .eq(Order::getOwnerId, userId)
-                .eq(Order::getState, 0);
-
-        long count = count(eq);
-        if (count != 0) throw new OrderVerifyException("您有存在的订单未结束");
+//        LambdaQueryWrapper<Order> eq = Wrappers.lambdaQuery(Order.class)
+//                .eq(Order::getOwnerId, userId)
+//                .eq(Order::getState, 0);
+//
+//        long count = count(eq);
+//        if (count != 0) throw new OrderVerifyException("您有存在的订单未结束");
 
         // 检查自己是否有批次和这个订单发生冲突
         LambdaQueryWrapper<Batch> eq1 = Wrappers.lambdaQuery(Batch.class)

@@ -25,20 +25,29 @@ public class MockInter extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 //        String id = request.getParameter("id");
-//
-//        UserVO userVO = new UserVO();
-//        userVO.setId(Long.parseLong(id));
-//        userVO.setState(0);
-//        userVO.setClientIP("127.0.01");
-//        userVO.setOpenid("MOCK_OPENID");
-//        UserContext.set(userVO);
 
-        UserVO userVO = new UserVO();
-        userVO.setId(1691353490296762370L);
-        userVO.setState(0);
-        userVO.setClientIP(hp.getClientIP(request));
-        userVO.setOpenid("om0Ab5GmA9eMzEbNhBmmUtPkHRP4");
-        UserContext.set(userVO);
+//
+        UserVO LiangHan = new UserVO();
+        LiangHan.setId(1691353490296762370L);
+        LiangHan.setState(0);
+        LiangHan.setClientIP(hp.getClientIP(request));
+        LiangHan.setOpenid("om0Ab5GmA9eMzEbNhBmmUtPkHRP4");
+        UserContext.set(LiangHan);
+
+//        UserVO YangSenJie = new UserVO();
+//        YangSenJie.setId(1766004942109773826L);
+//        YangSenJie.setState(1);
+//        YangSenJie.setClientIP(hp.getClientIP(request));
+//        YangSenJie.setOpenid("om0Ab5CjwxHSNCzyQQaGW5r33f30");
+//        UserContext.set(YangSenJie);
+
+//        UserVO GUOPEIXIONG = new UserVO();
+//        GUOPEIXIONG.setId(1765247479326564354L);
+//        GUOPEIXIONG.setState(1);
+//        GUOPEIXIONG.setClientIP(hp.getClientIP(request));
+//        GUOPEIXIONG.setOpenid("om0Ab5JfwWmoGstn3-zUE3mQl-Ro");
+//        UserContext.set(GUOPEIXIONG);
+
         return true;
     }
 
