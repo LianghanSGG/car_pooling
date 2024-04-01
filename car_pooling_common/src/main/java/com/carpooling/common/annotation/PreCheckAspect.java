@@ -33,16 +33,17 @@ public class PreCheckAspect {
         UserVO userVO = UserContext.get();
         Long id = userVO.getId();
 
-        if (blackListService.checkExist(id)) throw new PreCheckException("已拉黑，联系管理员");
-
 
         if (!preCheck.onlyBlackList()) {
             int state = userVO.getState().intValue();
-            if (state == 3) throw new PreCheckException("还未进行学生认证");
-            if (state == 2) throw new PreCheckException("还未进行电话认证");
-            if (state == 4) throw new PreCheckException("未完成学生和电话认证");
-            if (state == 1) throw new PreCheckException("请先注册");
+            if (preCheck.studentStart()){
+                if (state == 3) throw new PreCheckException("请实名认证");
+            }
+            if (state == 2) throw new PreCheckException("请验证电话号");
+            if (state == 1) throw new PreCheckException("请填写个人信息");
         }
+
+        if (blackListService.checkExist(id)) throw new PreCheckException("已拉黑，联系管理员");
 
     }
 

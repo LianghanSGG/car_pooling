@@ -16,4 +16,7 @@ import java.lang.annotation.Target;
 public @interface PreCheck {
 
     boolean onlyBlackList() default true;
+
+    // 是否开启实名认证检测，主要用于解耦。
+    boolean studentStart() default false;
 }

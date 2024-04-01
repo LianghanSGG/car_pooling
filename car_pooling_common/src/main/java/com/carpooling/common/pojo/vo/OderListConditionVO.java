@@ -49,7 +49,7 @@ public class OderListConditionVO {
      * 出发时间
      */
     @NotNull(message = "出发时间不能为空")
-    @Future(message = "出发时间应该晚于现在")
+    @Future(message = "时间有误")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime startTime;
 

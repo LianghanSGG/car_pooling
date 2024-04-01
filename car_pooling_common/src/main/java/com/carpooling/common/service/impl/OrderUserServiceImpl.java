@@ -70,7 +70,7 @@ public class OrderUserServiceImpl extends ServiceImpl<OrderUserMapper, OrderUser
             PassengerVO passengerVO = new PassengerVO();
             boolean flag = false;
             // 除了用户自身和团长，剩下的都脱敏
-            if (orderUser.getUserId().equals(userId) || (flag = (orderUser.getUserRole() == 0))) {
+            if ((flag = (orderUser.getUserRole() == 0)) || orderUser.getUserId().equals(userId) ) {
                 passengerVO.setUserId(orderUser.getUserId())
                         .setUserName(orderUser.getUserName())
                         .setSex(orderUser.getUserSex())
@@ -84,6 +84,7 @@ public class OrderUserServiceImpl extends ServiceImpl<OrderUserMapper, OrderUser
                 passengerVO.setUserId(orderUser.getUserId())
                         .setUserName(orderUser.getUserName().substring(0, 1) + "同学")
                         .setPhone(DesensitizedUtil.mobilePhone(orderUser.getUserPhone()))
+                        .setWxAccount("保密")
                         .setSex(orderUser.getUserSex());
             }
             passengerVOS.add(passengerVO);

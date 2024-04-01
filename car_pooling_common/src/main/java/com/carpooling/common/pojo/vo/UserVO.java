@@ -1,6 +1,5 @@
 package com.carpooling.common.pojo.vo;
 
-import com.carpooling.common.pojo.db.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +18,9 @@ import lombok.NoArgsConstructor;
 public class UserVO {
 
     /**
-     * 状态 0 正常 1 未注册 2 未电话认证 3 未学生认证 4 都没有认证
+
+     *         // 应该有三个状态。 没有注册个人信息、没有注册电话号、没有实名认证
+     *         // 重新规定 0 是正常 剩下的按照顺序下去
      * 无需序列化到DB
      */
     @JsonIgnore

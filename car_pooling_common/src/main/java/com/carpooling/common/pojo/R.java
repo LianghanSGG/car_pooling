@@ -62,7 +62,7 @@ public class R<T> {
     public static <T> R<T> fail(String msg) {
         R result = new R();
         result.msg = msg;
-        result.code = 300;
+        result.code = 400;
         return result;
     }
 

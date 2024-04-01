@@ -303,7 +303,7 @@ public class BatchServiceImpl extends ServiceImpl<BatchMapper, Batch> implements
                 .setEndPlace(batch.getEndPlace())
                 .setAppointmentTime(batch.getLatestTime().toLocalDate());
 
-        String sql = "total_number = total_number + " + batch.getPersonNumber();
+        String sql = "already_number = already_number + " + batch.getPersonNumber();
         LambdaUpdateWrapper<Order> orderLambdaUpdateWrapper = Wrappers.lambdaUpdate(Order.class)
                 .eq(Order::getId, orderBatch.getOrderId())
                 .setSql(sql);

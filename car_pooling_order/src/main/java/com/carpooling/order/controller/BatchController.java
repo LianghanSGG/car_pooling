@@ -58,7 +58,7 @@ public class BatchController {
      * @return
      * @apiNote 注意这个不是创建成为团主的接口
      */
-    @PreCheck(onlyBlackList = false)
+    @PreCheck(onlyBlackList = false,studentStart = true)
     @Log(module = "批次模块", operation = "创建批次")
     @PostMapping("/batch/create")
     public R createBatch(@RequestBody @Valid ShoppingCarVo shoppingCarVo) {
@@ -83,6 +83,7 @@ public class BatchController {
      * @param orderBatchId
      * @return
      */
+    @PreCheck(onlyBlackList = false,studentStart = true)
     @Log(module = "批次模块", operation = "允许用户加入订单")
     @GetMapping("/batch/pass")
     public R passCheck(@RequestParam Long orderBatchId) {
@@ -99,6 +100,7 @@ public class BatchController {
      * @param orderBatchId
      * @return
      */
+    @PreCheck(onlyBlackList = false,studentStart = true)
     @Log(module = "批次模块", operation = "拒绝用户加入订单")
     @GetMapping("/batch/refuse")
     public R refuseCheck(@RequestParam Long orderBatchId) {

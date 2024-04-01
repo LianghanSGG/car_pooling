@@ -4,10 +4,8 @@ import com.carpooling.common.annotation.Log;
 import com.carpooling.common.pojo.R;
 import com.carpooling.common.pojo.vo.StuCertStateVO;
 import com.carpooling.common.pojo.vo.StuCertVO;
-import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.StudentCertService;
 import com.carpooling.common.util.RedisUtil;
-import com.carpooling.common.util.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -67,9 +65,9 @@ public class StuController {
     @PostMapping("/info")
     public R saveOrUpdate(@Valid @RequestBody StuCertVO stuCertVO) {
 
-        Long id = UserContext.get().getId();
-        String s = redisUtil.StringGet(RedisPrefix.STUDENT_CERT_TIME + id, String.class);
-        if (Objects.nonNull(s)) return R.fail("30天只能修改一次，有异议发起反馈");
+//        Long id = UserContext.get().getId();
+//        String s = redisUtil.StringGet(RedisPrefix.STUDENT_CERT_TIME + id, String.class);
+//        if (Objects.nonNull(s)) return R.fail("30天只能修改一次，有异议发起反馈");
 
         if (studentCertService.saveStu(stuCertVO)) {
             return R.success();

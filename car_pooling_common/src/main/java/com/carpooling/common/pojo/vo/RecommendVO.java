@@ -48,8 +48,8 @@ public class RecommendVO {
     /**
      * 最早出发时间
      */
-    @NotNull(message = "最早出发时间不能为空")
-    @Future(message = "最早出发时间应该晚于现在")
+    @NotNull(message = "时间有误")
+    @Future(message = "时间有误")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime startTime;
 
@@ -57,8 +57,8 @@ public class RecommendVO {
     /**
      * 最晚出发时间
      */
-    @NotNull(message = "最晚出发时间不能为空")
-    @Future(message = "最晚出发时间应该晚于现在")
+    @NotNull(message = "时间有误")
+    @Future(message = "时间有误")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime lastTime;
 }

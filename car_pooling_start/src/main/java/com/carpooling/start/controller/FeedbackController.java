@@ -3,6 +3,7 @@ package com.carpooling.start.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.carpooling.common.annotation.Log;
+import com.carpooling.common.annotation.PreCheck;
 import com.carpooling.common.pojo.R;
 import com.carpooling.common.pojo.db.FeedBack;
 import com.carpooling.common.prefix.RedisPrefix;
@@ -105,6 +106,7 @@ public class FeedbackController {
      *
      * @return
      */
+    @PreCheck(onlyBlackList = false)
     @GetMapping("/check")
     public R<List<String>> checkComplain() {
         String userOpenId = UserContext.get().getOpenid();

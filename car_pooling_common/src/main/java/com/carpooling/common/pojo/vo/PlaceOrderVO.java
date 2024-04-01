@@ -38,16 +38,16 @@ public class PlaceOrderVO {
     /**
      * 最早出发时间
      */
-    @NotNull(message = "最早出发时间不能为空")
-    @Future(message = "最早出发时间应该晚于现在")
+    @NotNull(message = "时间不得为空")
+    @Future(message = "出行时间有误")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime earliestTime;
 
     /**
      * 最晚出发时间
      */
-    @NotNull(message = "最晚出发时间不能为空")
-    @Future(message = "最晚出发时间应该晚于现在")
+    @NotNull(message = "时间不得为空")
+    @Future(message = "出行时间有误")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime latestTime;
 

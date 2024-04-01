@@ -367,7 +367,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Long userId = UserContext.get().getId();
 
         LambdaQueryWrapper<Order> eq = Wrappers.lambdaQuery(Order.class)
-                .eq(Order::getOwnerId, userId);
+                .eq(Order::getOwnerId, userId)
+                .eq(Order::getState, 0);
 
         List<Order> list = list(eq);
         if (list == null || list.isEmpty()) return null;
@@ -442,7 +443,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (order == null) throw new OrderVerifyException("订单不存在");
 
         // 已经成为历史订单
-        if (one.getState().intValue() != 0 || one.getState().intValue() != 2) throw new OrderVerifyException("订单已经结束");
+        if (one.getState().intValue() != 0) throw new OrderVerifyException("订单已经结束");
 
 
         OrderDetailVO orderDetail = getOrderDetail(order);
@@ -536,8 +537,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         if (!one.getOwnerId().equals(userId)) throw new OrderVerifyException("您不拥有此订单");
 
+        if (!cancelOrderTransactional(orderId, userId)) {
+            return false;
+        }
 
-        return cancelOrderTransactional(orderId, userId);
+        LambdaUpdateWrapper<OrderUser> set = Wrappers.lambdaUpdate(OrderUser.class)
+                .eq(OrderUser::getOrderId, orderId)
+                .eq(OrderUser::getUserId, userId)
+                .set(OrderUser::getState, 2);
+
+        return  orderUserService.update(set);
     }
 
     @Override
@@ -747,7 +756,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     .setSex(order.getSex())
                     .setAutoJoin(order.getAutoJoin());
 
-            if (userId.equals(order.getOwnerId())) orderInfoVO.setMyself(1);
+            if (userId != null && userId.equals(order.getOwnerId())) orderInfoVO.setMyself(1);
             else orderInfoVO.setMyself(0);
 
             res.add(orderInfoVO);
@@ -796,6 +805,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderUser> passenger = orderUserService.list(Wrappers.lambdaQuery(OrderUser.class)
                 .eq(OrderUser::getOrderId, order.getId())
                 .eq(OrderUser::getState, 0)
+//                .ne(OrderUser::getUserId,userId)
                 .select(OrderUser::getUserId, OrderUser::getUserSex, OrderUser::getUserName, OrderUser::getUserPhone, OrderUser::getUserWechatAccount));
 
         if (passenger == null || passenger.isEmpty()) return orderDetail;

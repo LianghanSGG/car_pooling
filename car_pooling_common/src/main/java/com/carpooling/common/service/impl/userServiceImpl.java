@@ -2,7 +2,6 @@ package com.carpooling.common.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.DesensitizedUtil;
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,9 +13,7 @@ import com.carpooling.common.pojo.vo.LoginVo;
 import com.carpooling.common.pojo.vo.UserInfoVo;
 import com.carpooling.common.pojo.vo.UserVO;
 import com.carpooling.common.prefix.RedisPrefix;
-import com.carpooling.common.properties.NumberConstants;
 import com.carpooling.common.service.UserService;
-import com.carpooling.common.util.JwtUtil;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.WxUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -82,10 +79,10 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
             save(user);
 
-            String token = JwtUtil.getToken("temp", user.getId(), NumberConstants.TOKEN_TIME_15_DAY);
+//            String token = JwtUtil.getToken("temp", user.getId(), NumberConstants.TOKEN_TIME_15_DAY);
 
             loginVo.setState(4);
-            loginVo.setToken(token);
+            loginVo.setToken(user.getId()+"");
 
         } else {
 
@@ -98,17 +95,17 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 loginVo.setNickName(user.getNickName());
                 loginVo.setPhone(DesensitizedUtil.mobilePhone(user.getPhone()));
 
-                String token = JwtUtil.getToken("key", RandomUtil.randomLong(Long.MAX_VALUE), NumberConstants.TOKEN_USER_7_DAY);
+//                String token = JwtUtil.getToken("key", RandomUtil.randomLong(Long.MAX_VALUE), NumberConstants.TOKEN_USER_7_DAY);
 
-                String redisKey = RedisPrefix.USER + token.substring(token.lastIndexOf(".") + 1);
+//                String redisKey = RedisPrefix.USER + token.substring(token.lastIndexOf(".") + 1);
 
                 UserVO userVO = new UserVO();
                 userVO.setId(user.getId());
                 userVO.setOpenid(user.getOpenid());
 
-                redisUtil.StringAdd(redisKey, userVO, 14, TimeUnit.DAYS);
+//                redisUtil.StringAdd(redisKey, userVO, 14, TimeUnit.DAYS);
 
-                loginVo.setToken(token);
+                loginVo.setToken(user.getId()+"");
 
             } else {
 
@@ -119,8 +116,8 @@ public class userServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 } else {
                     loginVo.setState(2);
                 }
-                String token = JwtUtil.getToken("temp", user.getId(), NumberConstants.TOKEN_TIME_15_DAY);
-                loginVo.setToken(token);
+//                String token = JwtUtil.getToken("temp", user.getId(), NumberConstants.TOKEN_TIME_15_DAY);
+                loginVo.setToken(user.getId()+"");
 
             }
 
