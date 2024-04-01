@@ -424,7 +424,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         // 检查现在在订单的状态
         LambdaQueryWrapper<OrderUser> eq = Wrappers.lambdaQuery(OrderUser.class)
                 .eq(OrderUser::getOrderId, orderId)
-                .eq(OrderUser::getUserId, userId);
+                .eq(OrderUser::getUserId, userId)
+                .orderByDesc(OrderUser::getCreateTime)
+                .last("limit 1");
 
         OrderUser one = orderUserService.getOne(eq);
         if (one == null) {
@@ -493,7 +495,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         LambdaQueryWrapper<OrderUser> select = Wrappers.lambdaQuery(OrderUser.class)
                 .eq(OrderUser::getOrderId, orderId)
                 .eq(OrderUser::getUserId, id)
-                .select(OrderUser::getId, OrderUser::getState, OrderUser::getUserRole, OrderUser::getPersonNumber);
+                .select(OrderUser::getId, OrderUser::getState, OrderUser::getUserRole, OrderUser::getPersonNumber)
+                .orderByDesc(OrderUser::getCreateTime)
+                .last("limit 1");
 
 
         OrderUser one = orderUserService.getOne(select);

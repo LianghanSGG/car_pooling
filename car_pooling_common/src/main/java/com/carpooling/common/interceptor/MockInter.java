@@ -28,10 +28,10 @@ public class MockInter extends HandlerInterceptorAdapter {
 
 
 //        UserVO LiangHan = new UserVO();
-//        LiangHan.setId(1691353490296762370L);
+//        LiangHan.setId(1774389796803289090L);
 //        LiangHan.setState(0);
 //        LiangHan.setClientIP(hp.getClientIP(request));
-//        LiangHan.setOpenid("om0Ab5GmA9eMzEbNhBmmUtPkHRP4");
+//        LiangHan.setOpenid("om0Ab5CjwxHSNCzyQQaGW5r33f30");
 //        UserContext.set(LiangHan);
 
         UserVO cy = new UserVO();
@@ -41,19 +41,19 @@ public class MockInter extends HandlerInterceptorAdapter {
         cy.setOpenid("om0Ab5FhV0_UfY6cXftkbnkHgwkY");
         UserContext.set(cy);
 
-//        UserVO YangSenJie = new UserVO();
-//        YangSenJie.setId(1766004942109773826L);
-//        YangSenJie.setState(0);
-//        YangSenJie.setClientIP(hp.getClientIP(request));
-//        YangSenJie.setOpenid("om0Ab5CjwxHSNCzyQQaGW5r33f30");
-//        UserContext.set(YangSenJie);
+//        UserVO guopeixiong = new UserVO();
+//        guopeixiong.setId(1691353490296762370L);
+//        guopeixiong.setState(0);
+//        guopeixiong.setClientIP(hp.getClientIP(request));
+//        guopeixiong.setOpenid("om0Ab5GmA9eMzEbNhBmmUtPkHRP4");
+//        UserContext.set(guopeixiong);
 
-//        UserVO GUOPEIXIONG = new UserVO();
-//        GUOPEIXIONG.setId(1765247479326564354L);
-//        GUOPEIXIONG.setState(0);
-//        GUOPEIXIONG.setClientIP(hp.getClientIP(request));
-//        GUOPEIXIONG.setOpenid("om0Ab5JfwWmoGstn3-zUE3mQl-Ro");
-//        UserContext.set(GUOPEIXIONG);
+//        UserVO wuwenchuang = new UserVO();
+//        wuwenchuang.setId(1774401246095523843L);
+//        wuwenchuang.setState(0);
+//        wuwenchuang.setClientIP(hp.getClientIP(request));
+//        wuwenchuang.setOpenid("om0Ab5GmA9eMzEbNhBNNUtPkHRP4");
+//        UserContext.set(wuwenchuang);
 
         return true;
     }

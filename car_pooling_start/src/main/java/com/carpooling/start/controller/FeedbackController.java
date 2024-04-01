@@ -3,10 +3,8 @@ package com.carpooling.start.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.carpooling.common.annotation.Log;
-import com.carpooling.common.annotation.PreCheck;
 import com.carpooling.common.pojo.R;
 import com.carpooling.common.pojo.db.FeedBack;
-import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.FeedBackService;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.SensitiveFilterService;
@@ -47,13 +45,13 @@ public class FeedbackController {
     public R addFeedBack(@NotBlank @Length(max = 10000) String question) {
         Long id = UserContext.get().getId();
 
-        Integer count = redisUtil.StringGet(RedisPrefix.FEEDBACK_TIME + id, Integer.class);
-        boolean b;
-        if ((b = Objects.nonNull(count)) && count.intValue() == 2) {
-            return R.fail("24小时内只能反馈俩次");
-        }
+//        Integer count = redisUtil.StringGet(RedisPrefix.FEEDBACK_TIME + id, Integer.class);
+//        boolean b;
+//        if ((b = Objects.nonNull(count)) && count.intValue() == 2) {
+//            return R.fail("24小时内只能反馈俩次");
+//        }
 
-        if (feedBackService.addFeedBack(b, question)) {
+        if (feedBackService.addFeedBack(true, question)) {
             return R.success();
         } else {
             return R.fail("新增失败");
@@ -106,7 +104,7 @@ public class FeedbackController {
      *
      * @return
      */
-    @PreCheck(onlyBlackList = false)
+//    @PreCheck(onlyBlackList = false)
     @GetMapping("/check")
     public R<List<String>> checkComplain() {
         String userOpenId = UserContext.get().getOpenid();

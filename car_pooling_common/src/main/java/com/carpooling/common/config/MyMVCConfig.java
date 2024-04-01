@@ -47,15 +47,15 @@ public class MyMVCConfig implements WebMvcConfigurer {
         registry.addInterceptor(ipInterceptor)
                 .addPathPatterns("/**");
 //        临时注释掉
-        registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/user/login", "/druid/**","/user/getgonggao","/order/orderlist");
+//        registry.addInterceptor(loginInterceptor)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns("/user/login", "/druid/**","/user/getgonggao","/order/orderlist");
 
 //        registry.addInterceptor(mockInter)
 //                .addPathPatterns("/mock/**");
 //        使用模拟的登录拦截
-//        registry.addInterceptor(mockInter)
-//                .addPathPatterns("/**");
+        registry.addInterceptor(mockInter)
+                .addPathPatterns("/**");
 
 //        registry.addInterceptor(ipInterceptor)
 //                .addPathPatterns("/**");

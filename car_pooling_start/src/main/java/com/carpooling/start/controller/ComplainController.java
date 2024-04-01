@@ -7,7 +7,6 @@ import com.carpooling.common.annotation.PreCheck;
 import com.carpooling.common.pojo.R;
 import com.carpooling.common.pojo.db.Complain;
 import com.carpooling.common.pojo.vo.ComplainVO;
-import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.ComplainService;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.SensitiveFilterService;
@@ -46,13 +45,13 @@ public class ComplainController {
     public R addComplain(@Valid @RequestBody ComplainVO complainVO) {
         Long id = UserContext.get().getId();
 
-        Integer count = redisUtil.StringGet(RedisPrefix.COMPLAIN_TIME + id, Integer.class);
-        boolean b;
-        if ((b = Objects.nonNull(count)) && count.intValue() == 3) {
-            return R.fail("24小时内只能投诉3次");
-        }
+//        Integer count = redisUtil.StringGet(RedisPrefix.COMPLAIN_TIME + id, Integer.class);
+//        boolean b;
+//        if ((b = Objects.nonNull(count)) && count.intValue() == 3) {
+//            return R.fail("24小时内只能投诉3次");
+//        }
 
-        if (complainService.addComplain(b, complainVO)) {
+        if (complainService.addComplain(true, complainVO)) {
             return R.success();
         } else {
             return R.fail("新增失败");

@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.carpooling.common.mapper.FeedBackMapper;
 import com.carpooling.common.pojo.db.FeedBack;
-import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.FeedBackService;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.UserContext;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author LiangHanSggg
@@ -35,11 +33,11 @@ public class FeedBackServiceImpl extends ServiceImpl<FeedBackMapper, FeedBack> i
         feedBack.setQuestion(question);
         if (!save(feedBack)) return false;
 
-        if (exist) {
-            redisUtil.StringIncrement(RedisPrefix.FEEDBACK_TIME + UserContext.get().getId(), 1);
-        } else {
-            redisUtil.StringAdd(RedisPrefix.FEEDBACK_TIME + UserContext.get().getId(), 1, 1, TimeUnit.DAYS);
-        }
+//        if (exist) {
+//            redisUtil.StringIncrement(RedisPrefix.FEEDBACK_TIME + UserContext.get().getId(), 1);
+//        } else {
+//            redisUtil.StringAdd(RedisPrefix.FEEDBACK_TIME + UserContext.get().getId(), 1, 1, TimeUnit.DAYS);
+//        }
         return true;
     }
 

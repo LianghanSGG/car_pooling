@@ -8,7 +8,6 @@ import com.carpooling.common.mapper.ComplainMapper;
 import com.carpooling.common.pojo.db.Complain;
 import com.carpooling.common.pojo.vo.ComplainVO;
 import com.carpooling.common.pojo.vo.UserVO;
-import com.carpooling.common.prefix.RedisPrefix;
 import com.carpooling.common.service.ComplainService;
 import com.carpooling.common.util.RedisUtil;
 import com.carpooling.common.util.UserContext;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 可以考虑将反馈和投诉合成一张表、一个业务逻辑。
@@ -45,11 +43,11 @@ public class ComplainServiceImpl extends ServiceImpl<ComplainMapper, Complain> i
         if (!save(complain)) return false;
 
 
-        if (exist) {
-            redisUtil.StringIncrement(RedisPrefix.COMPLAIN_TIME + userVO.getId(), 1);
-        } else {
-            redisUtil.StringAdd(RedisPrefix.COMPLAIN_TIME + userVO.getId(), 1, 1, TimeUnit.DAYS);
-        }
+//        if (exist) {
+//            redisUtil.StringIncrement(RedisPrefix.COMPLAIN_TIME + userVO.getId(), 1);
+//        } else {
+//            redisUtil.StringAdd(RedisPrefix.COMPLAIN_TIME + userVO.getId(), 1, 1, TimeUnit.DAYS);
+//        }
 
         return true;
     }
